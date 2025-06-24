@@ -1,0 +1,65 @@
+.signup-component {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 50px;
+  border: 1px solid purple;
+  border-radius: 30px;
+}
+.signup-component input {
+  border-radius: 15px;
+}
+.username-signup {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  gap: 1px;
+}
+.username-signup p {
+  text-align: left;
+}
+.username-signup input {
+  width: 400px;
+  height: 40px;
+}
+.email-signup {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  gap: 1px;
+}
+.email-signup p {
+  text-align: left;
+}
+.email-signup input {
+  width: 400px;
+  height: 40px;
+}
+
+.password-signup {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.password-signup p {
+  text-align: left;
+}
+.passowrd-signup input {
+  width: 400px;
+  height: 40px;
+}
+
+#password-signup-box {
+  width: 400px;
+  height: 40px;
+}
+
+.signup-btn {
+  background-color: purple;
+  color: white;
+}
+
+.signup-btn:hover {
+  transform: scale(1.06);
+  background-color: rgb(23, 23, 174);
+}
