@@ -1,9 +1,7 @@
 const Game = () => {
   return (
-    <div className="game-component">
+    <div className="game-component" onClick={openGameDetails}>
       <img src="src/assets/images/ACII.jpeg" alt="Game Cover" />
-      <p>Game Title</p>
-      <p>Genre: Action, Adventure</p>
     </div>
   );
 };
