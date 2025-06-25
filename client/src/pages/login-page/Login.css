@@ -1,49 +1,92 @@
-.login-component {
+.login {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 50px;
-  border: 1px solid purple;
-  border-radius: 30px;
-}
-.email-login {
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  gap: 1px;
-}
-.email-login p {
-  text-align: left;
-}
-.email-login input {
-  width: 400px;
-  height: 40px;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: darkslateblue;
 }
 
+.login-component {
+  background-color: #fff;
+  width: 100%;
+  max-width: 500px;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.login-component-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+.email-login,
 .password-login {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-}
-.password-login p {
-  text-align: left;
-}
-.passowrd-login input {
-  width: 400px;
-  height: 40px;
+  gap: 8px;
+  width: 100%;
 }
 
-#password-login-box {
-  width: 400px;
+.email-login input,
+.password-login input {
   height: 40px;
+  padding: 0 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 95%;
+}
+
+.password-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-box input {
+  padding-right: 40px;
+}
+
+.show-password {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #999;
+  font-size: 18px;
 }
 
 .login-btn {
   background-color: purple;
   color: white;
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .login-btn:hover {
-  transform: scale(1.06);
   background-color: rgb(23, 23, 174);
+  transform: scale(1.05);
+}
+
+.login-component-content p {
+  text-align: left;
+  font-size: 14px;
+}
+
+.login-component-content a {
+  color: purple;
+  text-decoration: none;
+}
+
+.login-component-content a:hover {
+  text-decoration: underline;
 }
