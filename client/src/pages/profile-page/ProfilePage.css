@@ -1,0 +1,14 @@
+.profilepage-component {
+  height: 100%;
+}
+
+.profilepage-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+img {
+  height: 300px;
+}

@@ -28,7 +28,7 @@ const Signup = () => {
     const userId = signupData.user?.id;
 
     if (userId) {
-      const { error: profileError } = await supabase.from("profiles").upsert([
+      const { error: profileError } = await supabase.from("profiles").insert([
         {
           id: userId,
           username,

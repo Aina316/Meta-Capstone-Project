@@ -4,3 +4,51 @@
   display: fixed;
   flex-wrap: wrap;
 }
+.header-component {
+  background-color: #00239b;
+  color: white;
+  display: flex;
+  flex-direction: row;
+}
+
+.header-component header {
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  color: white;
+  justify-content: space-between;
+}
+.banner nav {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+.profile-btn {
+  background-color: gold;
+  color: black;
+  margin-top: 20px;
+  margin-right: 15px;
+  border-radius: 10px;
+  height: 40px;
+  justify-content: right;
+}
+.profile-btn a {
+  text-decoration: none;
+}
+.profile-btn:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+.logout-btn {
+  background-color: crimson;
+  margin-top: 20px;
+  margin-right: 15px;
+  border-radius: 10px;
+  height: 40px;
+  justify-content: right;
+}
+
+.logout-btn:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}
