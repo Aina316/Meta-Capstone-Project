@@ -1,0 +1,13 @@
+{
+  "name": "meta-capstone-project",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "seed": "node seed/seedCatalog.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.2",
+    "dotenv": "^17.0.0",
+    "node-fetch": "^2.7.0"
+  }
+}
