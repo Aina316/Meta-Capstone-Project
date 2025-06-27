@@ -1,3 +1,9 @@
 .home-component {
   height: 100%;
 }
+
+.home-content {
+  display: flex;
+  flex-direction: row;
+  gap: 30%;
+}

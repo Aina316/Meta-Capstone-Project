@@ -1,14 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGamepad } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
-
+import { signOut } from "../services/authentication";
 import "../App.css";
-const Header = ({ token }) => {
+
+const Header = () => {
   const navigate = useNavigate();
-  function handleLogout() {
-    sessionStorage.removeItem("token");
+  const handleLogout = async () => {
+    await signOut();
     navigate("/login");
-  }
+  };
+
   return (
     <div className="header-component">
       <header className="banner">
@@ -27,4 +29,5 @@ const Header = ({ token }) => {
     </div>
   );
 };
+
 export default Header;
