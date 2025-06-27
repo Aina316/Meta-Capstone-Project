@@ -29,8 +29,12 @@ const ProfilePage = () => {
     else alert("Update failed.");
   };
 
-  const handleAvatarUpdate = (url) => {
+  const handleAvatarUpdate = async (url) => {
     setProfile((prev) => ({ ...prev, image: url }));
+    const { error } = await updateUserProfile({ image: url });
+    if (error) {
+      alert("Failed to save data to databse");
+    }
   };
 
   if (loading) return <p>Loading profile...</p>;
@@ -43,17 +47,28 @@ const ProfilePage = () => {
         <h2>My Profile</h2>
         <img src={profile.image || image} alt="Avatar" />
         <AvatarUpdate onUpload={handleAvatarUpdate} />
-
-        <input
-          value={profile.username || ""}
-          onChange={(e) => setProfile({ ...profile, username: e.target.value })}
-          placeholder="Username"
-        />
-        <textarea
-          value={profile.bio || ""}
-          onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-          placeholder="Bio"
-        />
+        <div className="profile-username-box">
+          <strong>
+            <p>Username: </p>
+          </strong>
+          <input
+            value={profile.username || ""}
+            onChange={(e) =>
+              setProfile({ ...profile, username: e.target.value })
+            }
+            placeholder="Username"
+          />
+        </div>
+        <div className="profile-bio-box">
+          <strong>
+            <p>Bio: </p>
+          </strong>
+          <textarea
+            value={profile.bio || ""}
+            onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+            placeholder="Bio"
+          />
+        </div>
         <button onClick={handleSave}>Save Changes</button>
 
         <hr />

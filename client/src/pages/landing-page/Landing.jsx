@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-
 import "./Landing.css";
+
 const Landing = () => {
   return (
     <div className="landing-page-component">
@@ -22,4 +22,5 @@ const Landing = () => {
     </div>
   );
 };
+
 export default Landing;

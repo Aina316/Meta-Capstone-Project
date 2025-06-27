@@ -1,23 +1,30 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "/src/services/supabaseClient";
-import { signUp, signIn } from "../../services/authentication";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "./Signup.css";
+import { signUp } from "../../services/authentication";
+
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [visible, setVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setVisible(!visible);
+  };
 
   const handleSignup = async () => {
     if (!email || !password || !username) {
       alert("Please fill in all fields");
       return;
     }
-    const { data: signupData, error: signupError } = await supabase.auth.signUp(
-      {
-        email,
-        password,
-      }
+
+    const { data: signupData, error: signupError } = await signUp(
+      email,
+      password
     );
 
     if (signupError) {
@@ -44,6 +51,7 @@ const Signup = () => {
     alert("Signup successful! Check your email to confirm your account.");
     navigate("/login");
   };
+
   return (
     <div className="signup">
       <main className="signup-component">
@@ -55,7 +63,6 @@ const Signup = () => {
               type="text"
               name="username"
               required
-              id="username-signup-box"
               placeholder="Username"
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -65,7 +72,6 @@ const Signup = () => {
             <input
               type="text"
               name="email"
-              id="email-signup"
               required
               placeholder="Email"
               onChange={(e) => setEmail(e.target.value)}
@@ -73,16 +79,21 @@ const Signup = () => {
           </div>
           <div className="password-signup">
             <p>Password</p>
-            <input
-              type="password"
-              name="password"
-              id="password-signup-box"
-              placeholder="Password"
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="password-input-box">
+              <input
+                type={visible ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                required
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <FontAwesomeIcon
+                className="show-password"
+                icon={visible ? faEye : faEyeSlash}
+                onClick={togglePasswordVisibility}
+              />
+            </div>
           </div>
-
           <button className="signup-btn" onClick={handleSignup}>
             Create an Account
           </button>

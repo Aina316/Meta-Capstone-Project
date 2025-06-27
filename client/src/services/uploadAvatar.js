@@ -1,18 +1,15 @@
 import { supabase } from "./supabaseClient";
 
 export async function uploadAvatar(file, userId) {
-  console.log("File: ", file);
-  console.log("User Id: ", userId);
   if (!file || !userId) {
     return { error: new Error("Missing File or userId") };
   }
   const fileExt = file.name.split(".").pop();
   const fileName = `${userId}/${userId}.${fileExt}`;
-  const filePath = `${fileName}`;
 
   const { error: uploadError } = await supabase.storage
     .from("avatars")
-    .upload(filePath, file, {
+    .upload(fileName, file, {
       cacheControl: "3600",
       upsert: true,
     });
@@ -21,7 +18,7 @@ export async function uploadAvatar(file, userId) {
 
   const {
     data: { publicUrl },
-  } = supabase.storage.from("avatars").getPublicUrl(filePath);
+  } = supabase.storage.from("avatars").getPublicUrl(fileName);
 
   const { error: updateError } = await supabase
     .from("profiles")

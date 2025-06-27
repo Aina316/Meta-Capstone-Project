@@ -41,7 +41,7 @@
   font-size: 16px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  width: 100%;
+  width: 95%;
 }
 
 .password-input-box {
@@ -49,7 +49,16 @@
   display: flex;
   align-items: center;
 }
-
+.password-input-box input {
+  padding-right: 40px;
+}
+.show-password {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #999;
+  font-size: 18px;
+}
 .signup-btn {
   background-color: purple;
   color: white;

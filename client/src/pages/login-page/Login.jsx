@@ -1,16 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { supabase } from "../../services/supabaseClient";
 import "./Login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { signIn } from "../../services/authentication";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setVisible(!visible);
+  };
 
   const handleLogin = async () => {
     setError("");
@@ -22,10 +27,7 @@ const Login = () => {
       return;
     }
 
-    const { error: loginError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error: loginError } = await signIn(email, password);
 
     if (loginError) {
       setError(loginError.message);
@@ -36,6 +38,7 @@ const Login = () => {
     setLoading(false);
     navigate("/home");
   };
+
   return (
     <div className="login">
       <main className="login-component">
@@ -56,14 +59,18 @@ const Login = () => {
             <p>Password</p>
             <div className="password-input-box">
               <input
-                type="password"
+                type={visible ? "text" : "password"}
                 name="password"
                 pattern="[0-9a-fA-F]{4,8}"
                 placeholder="Password"
                 required
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <FontAwesomeIcon className="show-password" icon={faEye} />
+              <FontAwesomeIcon
+                className="show-password"
+                icon={visible ? faEye : faEyeSlash}
+                onClick={togglePasswordVisibility}
+              />
             </div>
           </div>
 
