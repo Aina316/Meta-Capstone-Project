@@ -1,6 +1,7 @@
 import GameList from "../Game/GameList";
 import "./HomePage.css";
 import Header from "../../../components/Header";
+import RequestBoard from "../Request/RequestBoard";
 import { useAuth } from "../../../context/authContext";
 
 const HomePage = () => {
@@ -11,7 +12,12 @@ const HomePage = () => {
       <h1>Welcome to HomePage!</h1>
       <p>Logged in as: {user.email}</p>
       <main className="home-content">
-        <GameList />
+        <div className="game-list-section">
+          <GameList />
+        </div>
+        <div className="requests-section">
+          <RequestBoard />
+        </div>
       </main>
     </div>
   );

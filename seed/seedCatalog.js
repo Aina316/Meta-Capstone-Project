@@ -3,8 +3,8 @@ import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
-const SUPABASE_URL = process.env.SUPABASE_URL;
 
+const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
 const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;

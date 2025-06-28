@@ -7,3 +7,10 @@
   flex-direction: row;
   gap: 30%;
 }
+.game-list-section {
+  flex: 3;
+  min-width: 300px;
+}
+.requests-section {
+  flex: 2;
+}
