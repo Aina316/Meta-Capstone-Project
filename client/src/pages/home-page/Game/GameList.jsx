@@ -27,9 +27,11 @@ export default function GameList() {
       <h2>Browse Games</h2>
       <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <div className="game-grid">
-        {filtered.map((game) => (
-          <Game key={game.id} game={game} />
-        ))}
+        {filtered.length === 0 ? (
+          <p> No games found matching "{searchQuery}"</p>
+        ) : (
+          filtered.map((game) => <Game key={game.id} game={game} />)
+        )}
       </div>
     </div>
   );
