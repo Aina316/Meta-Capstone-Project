@@ -2,12 +2,22 @@ import { useEffect, useState } from "react";
 import { fetchGamesCatalog } from "../../../services/catalogService";
 import SearchBox from "../SearchBox/SearchBox";
 import Game from "./Game";
+import GameDetails from "../../../components/GameDetails";
 import "./GameList.css";
 
 export default function GameList() {
   const [catalog, setCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedGame, setSelectedGame] = useState(null);
+
+  const handleGameClick = (game) => {
+    setSelectedGame(game);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedGame(null);
+  };
 
   useEffect(() => {
     const loadCatalog = async () => {
@@ -27,12 +37,11 @@ export default function GameList() {
       <h2>Browse Games</h2>
       <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <div className="game-grid">
-        {filtered.length === 0 ? (
-          <p> No games found matching "{searchQuery}"</p>
-        ) : (
-          filtered.map((game) => <Game key={game.id} game={game} />)
-        )}
+        {filtered.map((game) => (
+          <Game key={game.id} game={game} onClick={handleGameClick} />
+        ))}
       </div>
+      <GameDetails game={selectedGame} onClose={handleCloseModal} />
     </div>
   );
 }
