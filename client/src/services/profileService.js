@@ -16,15 +16,21 @@ export async function getUserProfile() {
   return data;
 }
 
-export async function updateUserProfile(updates) {
+export async function updateUserProfile({ username, bio, image }) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { error } = await supabase
+  const updates = {};
+  if (username !== undefined) updates.username = username;
+  if (bio !== undefined) updates.bio = bio;
+  if (image !== undefined) updates.image = image;
+
+  const { data, error } = await supabase
     .from("profiles")
     .update(updates)
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .single();
 
-  return { error };
+  return { data, error };
 }

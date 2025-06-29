@@ -15,7 +15,7 @@ const AvatarUpdate = ({ onUpload }) => {
   };
 
   return (
-    <div>
+    <div className="avatar-update">
       <input
         type="file"
         onChange={(e) => setFile(e.target.files[0])}
