@@ -57,7 +57,7 @@ const ProfilePage = () => {
           </p>
         </div>
         <button onClick={() => setOpenEdit(true)}>Edit Profile</button>
-        <button onClick={() => navigate("/mygamelibrary")}>Game Library</button>
+        <button onClick={() => navigate("/library")}>Game Library</button>
       </div>
       {openEdit && (
         <EditProfile

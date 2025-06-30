@@ -29,7 +29,7 @@ export const addGame = async (Game) => {
   return { data, error };
 };
 
-export const deleteGAme = async (id) => {
+export const deleteGame = async (id) => {
   const { error } = await supabase.from("games").delete().eq("id", id);
   return { error };
 };
