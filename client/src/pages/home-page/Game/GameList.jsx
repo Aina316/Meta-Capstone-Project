@@ -5,7 +5,7 @@ import Game from "./Game";
 import GameDetails from "../../../components/GameDetails";
 import "./GameList.css";
 
-export default function GameList() {
+const GameList = () => {
   const [catalog, setCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,10 +28,13 @@ export default function GameList() {
     };
     loadCatalog();
   }, []);
+
   const filtered = catalog.filter((game) =>
     game.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
   if (loading) return <p>Loading Games...</p>;
+
   return (
     <div className="game-list-component">
       <h2>Browse Games</h2>
@@ -41,7 +44,11 @@ export default function GameList() {
           <Game key={game.id} game={game} onClick={handleGameClick} />
         ))}
       </div>
-      <GameDetails game={selectedGame} onClose={handleCloseModal} />
+      {selectedGame && (
+        <GameDetails catalogGame={selectedGame} onClose={handleCloseModal} />
+      )}
     </div>
   );
-}
+};
+
+export default GameList;
