@@ -6,6 +6,7 @@ import Signup from "./pages/signup-page/Signup";
 import HomePage from "./pages/home-page/HomePage/HomePage";
 import ProfilePage from "./pages/profile-page/ProfilePage";
 import GameLibrary from "./pages/game-library-page/GameLibrary";
+import UserProfilePage from "./pages/profile-page/UserProfilePage";
 import "./App.css";
 
 function App() {
@@ -36,6 +37,14 @@ function App() {
         element={
           <PrivateRoute>
             <GameLibrary />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile/:userId"
+        element={
+          <PrivateRoute>
+            <UserProfilePage />
           </PrivateRoute>
         }
       />

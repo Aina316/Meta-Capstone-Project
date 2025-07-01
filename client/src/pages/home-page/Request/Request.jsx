@@ -1,14 +1,17 @@
+import { Link } from "react-router-dom";
 import "./RequestBoard.css";
 
 const Request = ({ request, onApprove, onDecline }) => {
   return (
     <div className="request-component">
       <div className="request-info">
-        <img
-          className="request-avatar"
-          src={request.borrower?.image || "/default_avatar.jpg"}
-          alt={request.borrower?.username || "Borrower"}
-        />
+        <Link to={`/profile/${request.borrower?.id}`}>
+          <img
+            className="request-avatar"
+            src={request.borrower?.image || "/default_avatar.jpg"}
+            alt={request.borrower?.username || "Borrower"}
+          />
+        </Link>
 
         <div className="request-details">
           <h4>{request.borrower?.username}</h4>
