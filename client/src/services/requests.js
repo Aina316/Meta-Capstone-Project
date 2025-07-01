@@ -5,15 +5,8 @@ export const fetchRequestsForLender = async (lenderId) => {
     .from("requests")
     .select(
       `
-      id,
-      created_at,
-      status,
-      borrower:borrower_id (
-        id,
-        username,
-        image,
-        borrower_score
-      )
+      *,
+      borrower: profiles!requests_borrower_id_fkey(id, username, image, borrower_score)
     `
     )
     .eq("lender_id", lenderId)
