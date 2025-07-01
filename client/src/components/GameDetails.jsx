@@ -1,59 +1,60 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/authContext";
+import image from "../assets/images/default_avatar.jpg";
 import { createBorrowRequest, makeGameUnavailable } from "../services/requests";
 import { fetchAvailableCopiesByCatalogId } from "../services/gameService";
 import "../App.css";
 
 const GameDetails = ({ catalogGame, onClose }) => {
   const { user } = useAuth();
-  const [availableCopies, setAvailableCopies] = useState([]);
+  const [owners, setOwners] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  if (!catalogGame) return null;
+
   useEffect(() => {
-    const loadCopies = async () => {
+    const loadOwners = async () => {
       setLoading(true);
       const { data, error } = await fetchAvailableCopiesByCatalogId(
         catalogGame.id
       );
       if (error) {
-        console.error("Error fetching copies:", error);
-        alert("Could not load available copies.");
+        console.error("Error loading owners:", error);
+        setOwners([]);
       } else {
-        setAvailableCopies(data);
+        setOwners(data);
       }
       setLoading(false);
     };
 
-    loadCopies();
-  }, [catalogGame.id]);
+    loadOwners();
+  }, [catalogGame]);
 
-  const handleBorrow = async (copy) => {
+  const handleBorrow = async (ownerCopy) => {
     if (!user) {
-      alert("You must be logged in to borrow.");
+      alert("You need to be logged in to borrow a game.");
       return;
     }
 
-    const { error: requestError } = await createBorrowRequest({
-      borrowerId: user.id,
-      lenderId: copy.owner_id,
-      gameId: copy.id,
-    });
+    const { error } = await createBorrowRequest(
+      ownerCopy.owner.id,
+      user.id,
+      ownerCopy.id
+    );
 
-    if (requestError) {
-      console.error("Error sending request:", requestError);
+    if (error) {
+      console.error("Borrow request failed:", error);
       alert("Failed to send borrow request.");
-      return;
+    } else {
+      const { error: updateError } = await makeGameUnavailable(ownerCopy.id);
+      if (updateError) {
+        console.error("Error updating availability:", updateError);
+        alert("Failed to update game availability.");
+        return;
+      }
+      alert("Borrow request sent!");
+      onClose();
     }
-
-    const { error: updateError } = await makeGameUnavailable(copy.id);
-    if (updateError) {
-      console.error("Error updating availability:", updateError);
-      alert("Failed to update game availability.");
-      return;
-    }
-
-    alert("Borrow request sent successfully!");
-    onClose();
   };
 
   return (
@@ -69,42 +70,38 @@ const GameDetails = ({ catalogGame, onClose }) => {
           className="cover-image"
         />
         <p>
+          <strong>Genre:</strong> {catalogGame.genre}
+        </p>
+        <p>
           <strong>Platform:</strong> {catalogGame.platform}
         </p>
 
-        <h3>Available Copies</h3>
-        {loading ? (
-          <p>Loading...</p>
-        ) : availableCopies.length === 0 ? (
-          <p>No available copies at this time.</p>
-        ) : (
-          <div className="available-copies-list">
-            {availableCopies.map((copy) => (
-              <div key={copy.id} className="copy-card">
-                <div className="owner-info">
-                  <img
-                    src={copy.owner?.image || "/default_avatar.jpg"}
-                    alt={copy.owner?.username}
-                    className="owner-avatar"
-                  />
-                  <div>
-                    <p>
-                      <strong>{copy.owner?.username}</strong>
-                    </p>
-                    <p>Borrower Score: {copy.owner?.borrower_score ?? "N/A"}</p>
-                    <p>Condition: {copy.condition}</p>
-                  </div>
-                </div>
-                <button
-                  className="borrow-btn"
-                  onClick={() => handleBorrow(copy)}
-                >
-                  Borrow Game
-                </button>
+        <hr />
+
+        <h3>Available Copies:</h3>
+        {loading && <p>Loading available owners...</p>}
+        {!loading && owners.length === 0 && <p>No available copies yet.</p>}
+
+        <div className="owners-list">
+          {owners.map((copy) => (
+            <div key={copy.id} className="owner-card">
+              <img
+                src={copy.owner?.image || image}
+                alt={copy.owner?.username}
+                className="owner-avatar"
+              />
+              <div className="owner-info">
+                <h4>{copy.owner?.username}</h4>
+                <p>Borrower Score: {copy.owner?.borrower_score ?? "N/A"}</p>
+                <p>Lender Score: {copy.owner?.lender_score ?? "N/A"}</p>
+                <p>Condition: {copy.condition}</p>
               </div>
-            ))}
-          </div>
-        )}
+              <button className="borrow-btn" onClick={() => handleBorrow(copy)}>
+                Borrow from {copy.owner?.username}
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
