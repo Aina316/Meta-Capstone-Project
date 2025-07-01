@@ -41,3 +41,24 @@ export const makeGameUnavailable = async (gameId) => {
     .eq("id", gameId);
   return { error };
 };
+
+export const updateRequestStatusWithInstructions = async (
+  requestId,
+  newStatus,
+  instructions
+) => {
+  const { error } = await supabase
+    .from("requests")
+    .update({ status: newStatus, share_instructions: instructions })
+    .eq("id", requestId);
+  return { error };
+};
+
+export const updateRequestStatus = async (requestId, newStatus) => {
+  const { error } = await supabase
+    .from("requests")
+    .update({ status: newStatus })
+    .eq("id", requestId);
+
+  return { error };
+};
