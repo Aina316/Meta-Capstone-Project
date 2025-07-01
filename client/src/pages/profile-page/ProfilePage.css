@@ -1,30 +1,67 @@
 .profilepage-component {
-  height: 100%;
+  min-height: 100vh;
+  background-color: #f5f5f5;
 }
 
 .profilepage-content {
+  max-width: 500px;
+  margin: 40px auto;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 30px 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.profilepage-content img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.profilepage-content h3 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.profile-bio {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.profile-scores {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
+  justify-content: space-around;
+  background-color: #fafafa;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 20px;
 }
-.profile-username-box {
-  display: flex;
-  gap: 7px;
+
+.profile-scores p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #444;
 }
-.profile-bio-box {
-  display: flex;
-  gap: 7px;
+
+.profilepage-content button {
+  padding: 10px 16px;
+  margin: 8px 5px;
+  border: none;
+  border-radius: 6px;
+  background-color: #00239b;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
-.profile-bio-box textarea {
-  margin-top: 16px;
-}
-input {
-  border: 0;
-}
-textarea {
-  border: 0;
-}
-img {
-  height: 300px;
+
+.profilepage-content button:hover {
+  background-color: #45a049;
 }
