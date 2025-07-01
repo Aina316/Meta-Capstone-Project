@@ -18,18 +18,14 @@ export default function GameList() {
     };
     loadCatalog();
   }, []);
-
   const filtered = catalog.filter((game) =>
-    game.title.toLowerCase().includes(query.toLowerCase())
+    game.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  if (loading) return <p>Loading games...</p>;
-
+  if (loading) return <p>Loading Games...</p>;
   return (
     <div className="game-list-component">
       <h2>Browse Games</h2>
       <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-
       <div className="game-grid">
         {filtered.map((game) => (
           <Game key={game.id} game={game} />
