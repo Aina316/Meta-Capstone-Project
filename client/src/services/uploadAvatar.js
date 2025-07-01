@@ -4,8 +4,9 @@ export async function uploadAvatar(file, userId) {
   if (!file || !userId) {
     return { error: new Error("Missing File or userId") };
   }
+
   const fileExt = file.name.split(".").pop();
-  const fileName = `${userId}/${userId}.${fileExt}`;
+  const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
   const { error: uploadError } = await supabase.storage
     .from("avatars")
@@ -25,5 +26,6 @@ export async function uploadAvatar(file, userId) {
     .update({ image: publicUrl })
     .eq("id", userId);
 
-  return { error: updateError, url: publicUrl };
+  if (updateError) return { error: updateError };
+  return { error: null, url: publicUrl };
 }

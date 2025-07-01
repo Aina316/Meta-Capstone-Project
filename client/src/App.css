@@ -23,6 +23,9 @@
   flex-direction: row;
   gap: 15px;
 }
+.banner h1:hover {
+  cursor: pointer;
+}
 .profile-btn {
   background-color: gold;
   color: black;
@@ -51,4 +54,86 @@
 .logout-btn:hover {
   transform: scale(1.1);
   cursor: pointer;
+}
+
+.game-details-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.game-details-modal-content {
+  background: white;
+  padding: 20px;
+  width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.cover-image {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.available-copies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.copy-card {
+  background: #fafafa;
+  border-radius: 6px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.owner-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.owner-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.borrow-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.borrow-btn:hover {
+  background-color: #45a049;
 }

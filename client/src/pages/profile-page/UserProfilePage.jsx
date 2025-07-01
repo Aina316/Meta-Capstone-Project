@@ -1,0 +1,62 @@
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "../../services/supabaseClient";
+import Header from "../../components/Header";
+import image from "../../assets/images/default_avatar.jpg";
+import "./ProfilePage.css";
+
+const UserProfilePage = () => {
+  const { userId } = useParams();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching user profile:", error);
+        alert("Could not load user profile.");
+      } else {
+        setProfile(data);
+      }
+      setLoading(false);
+    };
+
+    loadProfile();
+  }, [userId]);
+
+  if (loading) return <p>Loading profile...</p>;
+
+  if (!profile) return <p>User not found.</p>;
+
+  return (
+    <div className="profilepage-component">
+      <Header />
+
+      <div className="profilepage-content">
+        <h2>{profile.username}'s Profile</h2>
+        <img src={profile.image || image} alt="Avatar" />
+        <p className="profile-bio">{profile.bio}</p>
+
+        <div className="profile-scores">
+          <p>
+            <strong>Lender Score:</strong> {profile.lender_score}
+          </p>
+          <p>
+            <strong>Borrower Score:</strong> {profile.borrower_score}
+          </p>
+          <p>
+            <strong>Reputation:</strong> ⭐ {profile.reputation?.toFixed(1)}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UserProfilePage;

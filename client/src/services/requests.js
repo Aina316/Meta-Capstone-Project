@@ -1,20 +1,57 @@
 import { supabase } from "./supabaseClient";
 
-export const createRequest = async () => {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+export const fetchRequestsForLender = async (lenderId) => {
+  const { data, error } = await supabase
+    .from("requests")
+    .select(
+      `
+      *,
+      borrower: profiles!requests_borrower_id_fkey(id, username, image, borrower_score)
+    `
+    )
+    .eq("lender_id", lenderId)
+    .order("created_at", { ascending: false });
 
-  if (userError || !user) {
-    return { error: userError || "Not authenticated" };
-  }
+  return { data, error };
+};
 
-  const { error } = await supabase.from("transactions").insert([
+export const createBorrowRequest = async ({ borrowerId, lenderId, gameId }) => {
+  const { error } = await supabase.from("requests").insert([
     {
-      game_id: gameid,
-      borrower_id: user.id,
+      borrower_id: borrowerId,
+      lender_id: lenderId,
+      game_id: gameId,
+      status: "Pending",
     },
   ]);
   return error;
+};
+
+export const makeGameUnavailable = async (gameId) => {
+  const { error } = await supabase
+    .from("games")
+    .update({ available: false })
+    .eq("id", gameId);
+  return { error };
+};
+
+export const updateRequestStatusWithInstructions = async (
+  requestId,
+  newStatus,
+  instructions
+) => {
+  const { error } = await supabase
+    .from("requests")
+    .update({ status: newStatus, share_instructions: instructions })
+    .eq("id", requestId);
+  return { error };
+};
+
+export const updateRequestStatus = async (requestId, newStatus) => {
+  const { error } = await supabase
+    .from("requests")
+    .update({ status: newStatus })
+    .eq("id", requestId);
+
+  return { error };
 };

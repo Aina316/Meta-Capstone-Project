@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
 import Landing from "./pages/landing-page/Landing";
@@ -6,6 +5,8 @@ import Login from "./pages/login-page/Login";
 import Signup from "./pages/signup-page/Signup";
 import HomePage from "./pages/home-page/HomePage/HomePage";
 import ProfilePage from "./pages/profile-page/ProfilePage";
+import GameLibrary from "./pages/game-library-page/GameLibrary";
+import UserProfilePage from "./pages/profile-page/UserProfilePage";
 import "./App.css";
 
 function App() {
@@ -28,6 +29,22 @@ function App() {
         element={
           <PrivateRoute>
             <ProfilePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/library"
+        element={
+          <PrivateRoute>
+            <GameLibrary />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile/:userId"
+        element={
+          <PrivateRoute>
+            <UserProfilePage />
           </PrivateRoute>
         }
       />

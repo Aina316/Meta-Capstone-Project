@@ -1,6 +1,9 @@
 import "./SearchBox.css";
 
 const SearchBox = ({ searchQuery, setSearchQuery }) => {
+  const handleClear = () => {
+    setSearchQuery("");
+  };
   return (
     <div className="search-filter-component">
       <div className="search-component">
@@ -13,7 +16,7 @@ const SearchBox = ({ searchQuery, setSearchQuery }) => {
         />
         <div className="search-box-button">
           <button>Search</button>
-          <button>Clear</button>
+          <button onClick={handleClear}>Clear</button>
         </div>
       </div>
     </div>
