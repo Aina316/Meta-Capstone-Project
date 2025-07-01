@@ -10,6 +10,9 @@ const Header = () => {
     await signOut();
     navigate("/login");
   };
+  const handleHomePage = () => {
+    navigate("/home");
+  };
 
   return (
     <div className="header-component">
@@ -22,7 +25,7 @@ const Header = () => {
             Logout
           </button>
         </nav>
-        <h1>
+        <h1 onClick={handleHomePage}>
           Gamers Den <FontAwesomeIcon icon={faGamepad} />
         </h1>
       </header>
