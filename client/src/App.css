@@ -112,19 +112,6 @@
   align-items: center;
 }
 
-.owner-info {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.owner-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
 .borrow-btn {
   background-color: #4caf50;
   color: white;
@@ -136,4 +123,31 @@
 
 .borrow-btn:hover {
   background-color: #45a049;
+}
+
+.owners-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.owner-card {
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.owner-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.owner-info {
+  flex: 1;
 }
