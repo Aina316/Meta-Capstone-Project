@@ -33,3 +33,27 @@ export const deleteGame = async (id) => {
   const { error } = await supabase.from("games").delete().eq("id", id);
   return { error };
 };
+
+export const fetchAvailableCopiesByCatalogId = async (catalogId) => {
+  const { data, error } = await supabase
+    .from("games")
+    .select(
+      `
+      id,
+      owner_id,
+      available,
+      condition,
+      platform,
+      owner:owner_id (
+        id,
+        username,
+        image,
+        borrower_score
+      )
+    `
+    )
+    .eq("catalog_id", catalogId)
+    .eq("available", true);
+
+  return { data, error };
+};
