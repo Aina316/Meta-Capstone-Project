@@ -29,10 +29,10 @@ async function getIGDBAccessToken() {
 async function fetchIGDBGames(accessToken) {
   const IGDB_URL = "https://api.igdb.com/v4/games";
   const query = `
-    fields id, name, cover.url, genres.name, platforms.name;
+    fields id, name, cover.url, genres.name, platforms.name, summary;
     where cover != null & genres != null & platforms != null;
     sort popularity desc;
-    limit 50;
+    limit 300;
   `;
 
   const res = await fetch(IGDB_URL, {
@@ -55,9 +55,18 @@ async function insertIntoSupabase(games) {
     cover_image: game.cover ? `https:${game.cover.url}` : null,
     platform: game.platforms?.map((p) => p.name).join(", ") || "",
     genre: game.genres?.map((g) => g.name).join(", ") || "",
+    synopsis: game.summary || "No synopsis",
   }));
 
   console.log(`Prepared ${formatted.length} games to insert.`);
+  const { error: deleteError } = await supabase
+    .from("catalog")
+    .delete()
+    .neq("genre", "");
+  if (deleteError) {
+    console.error("Error deleting existing data: ", deleteError);
+    return;
+  }
 
   const { error } = await supabase.from("catalog").insert(formatted);
 

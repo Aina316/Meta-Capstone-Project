@@ -1,7 +1,12 @@
 .home-component {
   height: 100%;
 }
-
+.home-component h1 {
+  margin-left: 20px;
+}
+.home-component p {
+  margin-left: 20px;
+}
 .home-content {
   display: flex;
   flex-direction: row;

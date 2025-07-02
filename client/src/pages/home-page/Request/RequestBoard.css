@@ -145,3 +145,31 @@ textarea {
   border-radius: 4px;
   cursor: pointer;
 }
+
+.view-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.view-toggle button {
+  padding: 8px 16px;
+  border: 1px solid #00239b;
+  border-radius: 20px;
+  background-color: white;
+  color: #00239b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-toggle button:hover {
+  background-color: #00239b;
+  color: white;
+}
+
+.view-toggle button.active {
+  background-color: #00239b;
+  color: white;
+  font-weight: bold;
+}

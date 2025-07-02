@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/authContext";
 import {
   fetchRequestsForLender,
+  fetchRequestsForBorrower,
   updateRequestStatus,
   updateRequestStatusWithInstructions,
 } from "../../../services/requests";
@@ -17,10 +18,20 @@ const RequestBoard = () => {
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
 
+  // NEW STATE: Which view is active?
+  const [view, setView] = useState("incoming"); // "incoming" or "outgoing"
+
   const loadRequests = async () => {
     if (!user) return;
     setLoading(true);
-    const { data, error } = await fetchRequestsForLender(user.id);
+
+    let data, error;
+    if (view === "incoming") {
+      ({ data, error } = await fetchRequestsForLender(user.id));
+    } else {
+      ({ data, error } = await fetchRequestsForBorrower(user.id));
+    }
+
     if (error) {
       console.error("Error fetching requests:", error);
       alert("Failed to load requests.");
@@ -33,7 +44,7 @@ const RequestBoard = () => {
 
   useEffect(() => {
     loadRequests();
-  }, [user]);
+  }, [user, view]);
 
   const handleDecline = async (requestId) => {
     const { error } = await updateRequestStatus(requestId, "Declined");
@@ -68,18 +79,38 @@ const RequestBoard = () => {
 
   return (
     <div className="request-board-component">
-      <h2>Borrow Requests</h2>
+      <h2>Borrow Requests Board</h2>
+
+      <div className="view-toggle">
+        <button
+          className={view === "incoming" ? "active" : ""}
+          onClick={() => setView("incoming")}
+        >
+          Requests To Me
+        </button>
+        <button
+          className={view === "outgoing" ? "active" : ""}
+          onClick={() => setView("outgoing")}
+        >
+          My Borrow Requests
+        </button>
+      </div>
 
       {loading ? (
         <p>Loading requests...</p>
       ) : requests.length === 0 ? (
-        <p className="no-requests">No borrow requests at this time.</p>
+        <p className="no-requests">
+          {view === "incoming"
+            ? "No incoming borrow requests at this time."
+            : "You haven't made any borrow requests yet."}
+        </p>
       ) : (
         <div className="request-list">
           {requests.map((req) => (
             <Request
               key={req.id}
               request={req}
+              perspective={view === "incoming" ? "lender" : "borrower"}
               onApprove={() => openApproveModal(req)}
               onDecline={() => handleDecline(req.id)}
             />

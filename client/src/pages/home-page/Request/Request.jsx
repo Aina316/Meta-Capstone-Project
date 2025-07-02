@@ -1,21 +1,29 @@
 import { Link } from "react-router-dom";
 import "./RequestBoard.css";
 
-const Request = ({ request, onApprove, onDecline }) => {
+const Request = ({ request, perspective, onApprove, onDecline }) => {
+  const otherUser =
+    perspective === "lender" ? request.borrower : request.lender;
+
   return (
     <div className="request-component">
       <div className="request-info">
-        <Link to={`/profile/${request.borrower?.id}`}>
+        <Link to={`/profile/${otherUser?.id}`}>
           <img
             className="request-avatar"
-            src={request.borrower?.image || "/default_avatar.jpg"}
-            alt={request.borrower?.username || "Borrower"}
+            src={otherUser?.image || "/default_avatar.jpg"}
+            alt={otherUser?.username || "User"}
           />
         </Link>
 
         <div className="request-details">
-          <h4>{request.borrower?.username}</h4>
-          <p>Borrower Score: {request.borrower?.borrower_score}</p>
+          <h4>{otherUser?.username}</h4>
+          {perspective === "lender" && (
+            <p>Borrower Score: {otherUser?.borrower_score ?? "N/A"}</p>
+          )}
+          {perspective === "borrower" && (
+            <p>Lender Score: {otherUser?.lender_score ?? "N/A"}</p>
+          )}
           <p className="request-date">
             Requested on: {new Date(request.created_at).toLocaleDateString()}
           </p>
@@ -30,7 +38,7 @@ const Request = ({ request, onApprove, onDecline }) => {
         </div>
       </div>
 
-      {request.status === "Pending" && (
+      {perspective === "lender" && request.status === "Pending" && (
         <div className="request-actions">
           <button className="accept-btn" onClick={onApprove}>
             Accept
