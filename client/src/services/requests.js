@@ -15,16 +15,25 @@ export const fetchRequestsForLender = async (lenderId) => {
   return { data, error };
 };
 
-export const createBorrowRequest = async ({ borrowerId, lenderId, gameId }) => {
+export const createBorrowRequest = async ({ lenderId, gameId }) => {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError) {
+    return { error: authError };
+  }
+
   const { error } = await supabase.from("requests").insert([
     {
-      borrower_id: borrowerId,
+      borrower_id: user.id,
       lender_id: lenderId,
       game_id: gameId,
       status: "Pending",
     },
   ]);
-  return error;
+  return { error };
 };
 
 export const makeGameUnavailable = async (gameId) => {

@@ -36,11 +36,10 @@ const GameDetails = ({ catalogGame, onClose }) => {
       return;
     }
 
-    const { error } = await createBorrowRequest(
-      ownerCopy.owner.id,
-      user.id,
-      ownerCopy.id
-    );
+    const { error } = await createBorrowRequest({
+      lenderId: ownerCopy.owner.id,
+      gameId: ownerCopy.id,
+    });
 
     if (error) {
       console.error("Borrow request failed:", error);
@@ -56,7 +55,8 @@ const GameDetails = ({ catalogGame, onClose }) => {
       onClose();
     }
   };
-
+  console.log("owners from supabase: ", owners);
+  console.log("user.id", user.id);
   return (
     <div className="game-details-modal-overlay">
       <div className="game-details-modal-content">
@@ -97,7 +97,7 @@ const GameDetails = ({ catalogGame, onClose }) => {
                 <p>Condition: {copy.condition}</p>
               </div>
               <button className="borrow-btn" onClick={() => handleBorrow(copy)}>
-                Borrow from {copy.owner?.username}
+                Borrow
               </button>
             </div>
           ))}
