@@ -15,6 +15,21 @@ export const fetchRequestsForLender = async (lenderId) => {
   return { data, error };
 };
 
+export const fetchRequestsForBorrower = async (borrowerId) => {
+  const { data, error } = await supabase
+    .from("requests")
+    .select(
+      `
+        *,
+        lender: profiles!requests_lender_id_fkey(id, username, image, lender_score)
+      `
+    )
+    .eq("borrower_id", borrowerId)
+    .order("created_at", { ascending: false });
+
+  return { data, error };
+};
+
 export const createBorrowRequest = async ({ lenderId, gameId }) => {
   const {
     data: { user },

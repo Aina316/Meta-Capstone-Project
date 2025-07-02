@@ -1,7 +1,28 @@
 .game-component {
   display: flex;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   flex-direction: column;
+  text-align: center;
+  border-radius: 12px;
+  background-color: #ffffff;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   width: 30%;
+}
+.game-component:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 6px 102px rgba(29, 87, 235, 0.2);
+}
+.game-component h3 {
+  margin: 12px 0 4px 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+.game-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
 }
 
 .game-card {

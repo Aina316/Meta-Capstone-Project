@@ -10,7 +10,7 @@ const HomePage = () => {
   return (
     <div className="home-component">
       <Header />
-      <h1>Welcome to HomePage!</h1>
+      <h1>Welcome to the Den!</h1>
       <p>Logged in as: {user.email}</p>
       <main className="home-content">
         <div className="game-list-section">

@@ -15,7 +15,6 @@ const SearchBox = ({ searchQuery, setSearchQuery }) => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <div className="search-box-button">
-          <button>Search</button>
           <button onClick={handleClear}>Clear</button>
         </div>
       </div>
