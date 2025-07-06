@@ -6,7 +6,8 @@ export const fetchRequestsForLender = async (lenderId) => {
     .select(
       `
       *,
-      borrower: profiles!requests_borrower_id_fkey(id, username, image, borrower_score)
+      borrower: profiles!requests_borrower_id_fkey(id, username, image, borrower_score), 
+      game: games(id, title)
     `
     )
     .eq("lender_id", lenderId)
@@ -21,7 +22,9 @@ export const fetchRequestsForBorrower = async (borrowerId) => {
     .select(
       `
         *,
-        lender: profiles!requests_lender_id_fkey(id, username, image, lender_score)
+        lender: profiles!requests_lender_id_fkey(id, username, image, lender_score),
+        game: games(id, title)
+
       `
     )
     .eq("borrower_id", borrowerId)
@@ -59,7 +62,7 @@ export const makeGameUnavailable = async (gameId) => {
   return { error };
 };
 
-export const updateRequestStatusWithInstructions = async (
+export const updateApprovalStatus = async (
   requestId,
   newStatus,
   instructions
@@ -71,7 +74,7 @@ export const updateRequestStatusWithInstructions = async (
   return { error };
 };
 
-export const updateRequestStatus = async (requestId, newStatus) => {
+export const updateDenialStatus = async (requestId, newStatus) => {
   const { error } = await supabase
     .from("requests")
     .update({ status: newStatus })

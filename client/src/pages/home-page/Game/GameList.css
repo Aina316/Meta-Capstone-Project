@@ -20,3 +20,23 @@
   margin: 0 auto;
   padding: 20px 0;
 }
+.search-component {
+  display: flex;
+  flex-direction: row;
+}
+.filter-btn {
+  background-color: #ffffff;
+  border: none;
+  height: 50px;
+  width: 100px;
+  border-radius: 40px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.filter-btn:hover {
+  transform: scale(1.15);
+}
+.filter-icon {
+  height: 30px;
+  width: 30px;
+}

@@ -18,6 +18,9 @@ const Request = ({ request, perspective, onApprove, onDecline }) => {
 
         <div className="request-details">
           <h4>{otherUser?.username}</h4>
+          <p className="game-title">
+            Game: <strong>{request.game?.title || "Unknown Game"}</strong>
+          </p>
           {perspective === "lender" && (
             <p>Borrower Score: {otherUser?.borrower_score ?? "N/A"}</p>
           )}
