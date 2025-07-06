@@ -44,11 +44,10 @@ async function fetchIGDBGames(accessToken) {
     body: query,
   });
 
-  const data = await res.json();
-  return data;
+  return await res.json();
 }
 
-async function insertIntoSupabase(games) {
+async function insertGamesIntoSupabase(games) {
   const formatted = games.map((game) => ({
     igdb_id: game.id,
     title: game.name,
@@ -58,39 +57,15 @@ async function insertIntoSupabase(games) {
     synopsis: game.summary || "No synopsis",
   }));
 
-  console.log(`Prepared ${formatted.length} games to insert.`);
-  const { error: deleteError } = await supabase
-    .from("catalog")
-    .delete()
-    .neq("genre", "");
-  if (deleteError) {
-    console.error("Error deleting existing data: ", deleteError);
-    return;
-  }
+  await supabase.from("catalog").delete().neq("genre", "");
 
-  const { error } = await supabase.from("catalog").insert(formatted);
-
-  if (error) {
-    console.error("Error inserting to Supabase:", error);
-  } else {
-    console.log("Successfully inserted games!");
-  }
+  await supabase.from("catalog").insert(formatted);
 }
 
 (async () => {
   try {
-    console.log("Getting IGDB access token...");
     const token = await getIGDBAccessToken();
-
-    console.log("Fetching games from IGDB...");
     const games = await fetchIGDBGames(token);
-    console.log(`Fetched ${games.length} games.`);
-
-    console.log("Inserting into Supabase...");
-    await insertIntoSupabase(games);
-
-    console.log("Seeding complete!");
-  } catch (err) {
-    console.error("Seeding failed:", err);
-  }
+    await insertGamesIntoSupabase(games);
+  } catch {}
 })();

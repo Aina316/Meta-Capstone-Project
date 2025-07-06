@@ -18,8 +18,7 @@ const RequestBoard = () => {
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
 
-  // NEW STATE: Which view is active?
-  const [boardView, setBoardView] = useState("isIncoming"); // "isIncoming" or "isOutgoing"
+  const [boardView, setBoardView] = useState("isIncoming"); //sets view of the request board to either incoming or outgoing requests
 
   const loadRequests = async () => {
     if (!user) return;
