@@ -3,8 +3,8 @@ import { useAuth } from "../../../context/authContext";
 import {
   fetchRequestsForLender,
   fetchRequestsForBorrower,
-  updateRequestStatus,
-  updateRequestStatusWithInstructions,
+  updateDenialStatus,
+  updateApprovalStatus,
 } from "../../../services/requests";
 import Request from "./Request";
 import ApproveRequestModal from "./ApproveRequestModal";
@@ -19,14 +19,14 @@ const RequestBoard = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
 
   // NEW STATE: Which view is active?
-  const [view, setView] = useState("incoming"); // "incoming" or "outgoing"
+  const [boardView, setBoardView] = useState("isIncoming"); // "isIncoming" or "isOutgoing"
 
   const loadRequests = async () => {
     if (!user) return;
     setLoading(true);
 
     let data, error;
-    if (view === "incoming") {
+    if (boardView === "isIncoming") {
       ({ data, error } = await fetchRequestsForLender(user.id));
     } else {
       ({ data, error } = await fetchRequestsForBorrower(user.id));
@@ -44,10 +44,10 @@ const RequestBoard = () => {
 
   useEffect(() => {
     loadRequests();
-  }, [user, view]);
+  }, [user, boardView]);
 
   const handleDecline = async (requestId) => {
-    const { error } = await updateRequestStatus(requestId, "Declined");
+    const { error } = await updateDenialStatus(requestId, "Declined");
     if (error) {
       alert("Failed to decline request");
     } else {
@@ -61,9 +61,9 @@ const RequestBoard = () => {
     setShowApproveModal(true);
   };
 
-  const handleApproveWithInstructions = async (instructions) => {
+  const handleApprove = async (instructions) => {
     if (!selectedRequest) return;
-    const { error } = await updateRequestStatusWithInstructions(
+    const { error } = await updateApprovalStatus(
       selectedRequest.id,
       "Accepted",
       instructions
@@ -83,14 +83,14 @@ const RequestBoard = () => {
 
       <div className="view-toggle">
         <button
-          className={view === "incoming" ? "active" : ""}
-          onClick={() => setView("incoming")}
+          className={boardView === "isIncoming" ? "active" : ""}
+          onClick={() => setBoardView("isIncoming")}
         >
           Requests To Me
         </button>
         <button
-          className={view === "outgoing" ? "active" : ""}
-          onClick={() => setView("outgoing")}
+          className={boardView === "isOutgoing" ? "active" : ""}
+          onClick={() => setBoardView("isOutgoing")}
         >
           My Borrow Requests
         </button>
@@ -100,7 +100,7 @@ const RequestBoard = () => {
         <p>Loading requests...</p>
       ) : requests.length === 0 ? (
         <p className="no-requests">
-          {view === "incoming"
+          {boardView === "isIncoming"
             ? "No incoming borrow requests at this time."
             : "You haven't made any borrow requests yet."}
         </p>
@@ -110,7 +110,7 @@ const RequestBoard = () => {
             <Request
               key={req.id}
               request={req}
-              perspective={view === "incoming" ? "lender" : "borrower"}
+              perspective={boardView === "isIncoming" ? "lender" : "borrower"}
               onApprove={() => openApproveModal(req)}
               onDecline={() => handleDecline(req.id)}
             />
@@ -121,7 +121,7 @@ const RequestBoard = () => {
       {showApproveModal && selectedRequest && (
         <ApproveRequestModal
           onClose={() => setShowApproveModal(false)}
-          onAccepted={handleApproveWithInstructions}
+          onAccepted={handleApprove}
         />
       )}
     </div>
