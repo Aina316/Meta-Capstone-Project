@@ -12,6 +12,8 @@ const Filter = ({
   setSelectedGenre,
   selectedPlatform,
   setSelectedPlatform,
+  selectedAvailability,
+  setSelectedAvailability,
 }) => {
   const [genres, setGenres] = useState([]);
   const [platforms, setPlatforms] = useState([]);
@@ -37,6 +39,19 @@ const Filter = ({
           X
         </button>
         <h2>Filter Games</h2>
+        <div className="filter-section">
+          <label>
+            Availability:
+            <select
+              value={selectedAvailability}
+              onChange={(e) => setSelectedAvailability(e.target.value)}
+            >
+              <option value="">All</option>
+              <option value="Available">Available</option>
+              <option value="Not Available">Not Available</option>
+            </select>
+          </label>
+        </div>
         <div className="filter-section">
           <label>
             Genre:
