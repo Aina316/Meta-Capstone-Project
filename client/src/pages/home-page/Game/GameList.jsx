@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchGamesCatalog } from "../../../services/catalogService";
+import {
+  fetchGamesCatalog,
+  fetchAvailableCatalogIds,
+} from "../../../services/catalogService";
 import SearchBox from "../SearchBox/SearchBox";
 import Filter from "../SearchBox/Filter";
 import Game from "./Game";
@@ -16,6 +19,8 @@ const GameList = () => {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [selectedGenre, setSelectedGenre] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("");
+  const [selectedAvailability, setSelectedAvailability] = useState("");
+  const [availableCatalogIds, setAvailableCatalogIds] = useState([]);
 
   const handleGameClick = (game) => {
     setSelectedGame(game);
@@ -38,12 +43,32 @@ const GameList = () => {
   const handleApplyFilters = () => {
     setShowFilterModal(false);
   };
+  useEffect(() => {
+    const loadAvailableIds = async () => {
+      const ids = await fetchAvailableCatalogIds();
+      setAvailableCatalogIds(ids || []);
+    };
+    loadAvailableIds();
+  }, []);
 
   const filtered = catalog.filter((game) => {
+    const matchesSearch = game.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesGenre =
+      selectedGenre === "" || game.genre.includes(selectedGenre);
+    const matchesPlatform =
+      selectedPlatform === "" || game.platform.includes(selectedPlatform);
+
+    const matchesAvailability =
+      selectedAvailability === "" ||
+      (selectedAvailability === "Available" &&
+        availableCatalogIds.includes(game.id)) ||
+      (selectedAvailability === "Not Available" &&
+        !availableCatalogIds.includes(game.id));
+
     return (
-      game.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (selectedGenre === "" || game.genre.includes(selectedGenre)) &&
-      (selectedPlatform === "" || game.platform.includes(selectedPlatform))
+      matchesSearch && matchesGenre && matchesPlatform && matchesAvailability
     );
   });
 
@@ -72,6 +97,8 @@ const GameList = () => {
           setSelectedGenre={setSelectedGenre}
           selectedPlatform={selectedPlatform}
           setSelectedPlatform={setSelectedPlatform}
+          selectedAvailability={selectedAvailability}
+          setSelectedAvailability={setSelectedAvailability}
           onClose={() => setShowFilterModal(false)}
           onApply={handleApplyFilters}
         />
