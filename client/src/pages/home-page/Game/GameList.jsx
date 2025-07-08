@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchGamesCatalog } from "../../../services/catalogService";
+import {
+  fetchGamesCatalog,
+  fetchAvailableCatalogIds,
+} from "../../../services/catalogService";
 import SearchBox from "../SearchBox/SearchBox";
 import Filter from "../SearchBox/Filter";
 import Game from "./Game";
@@ -7,22 +10,17 @@ import GameDetails from "../../../components/GameDetails";
 import "./GameList.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
+
 const GameList = () => {
   const [catalog, setCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGame, setSelectedGame] = useState(null);
   const [showFilterModal, setShowFilterModal] = useState(false);
-  const [filters, setFilters] = useState({
-    availability: "all",
-    platform: "",
-    genre: "",
-  });
-
-  const handleApplyFilters = (newFilters) => {
-    setFilters(newFilters);
-    setShowFilterModal(false);
-  };
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState("");
+  const [selectedAvailability, setSelectedAvailability] = useState("");
+  const [availableCatalogIds, setAvailableCatalogIds] = useState([]);
 
   const handleGameClick = (game) => {
     setSelectedGame(game);
@@ -42,16 +40,37 @@ const GameList = () => {
     loadCatalog();
   }, []);
 
-  const filtered = catalog
-    .filter((game) =>
-      game.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .filter((game) => {
-      if (filters.availability === "available" && !game.available) return false;
-      if (filters.platform && game.platform !== filters.platform) return false;
-      if (filters.genre && game.genre !== filters.genre) return false;
-      return true;
-    });
+  const handleApplyFilters = () => {
+    setShowFilterModal(false);
+  };
+  useEffect(() => {
+    const loadAvailableIds = async () => {
+      const ids = await fetchAvailableCatalogIds();
+      setAvailableCatalogIds(ids || []);
+    };
+    loadAvailableIds();
+  }, []);
+
+  const filtered = catalog.filter((game) => {
+    const matchesSearch = game.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesGenre =
+      selectedGenre === "" || game.genre.includes(selectedGenre);
+    const matchesPlatform =
+      selectedPlatform === "" || game.platform.includes(selectedPlatform);
+
+    const matchesAvailability =
+      selectedAvailability === "" ||
+      (selectedAvailability === "Available" &&
+        availableCatalogIds.includes(game.id)) ||
+      (selectedAvailability === "Not Available" &&
+        !availableCatalogIds.includes(game.id));
+
+    return (
+      matchesSearch && matchesGenre && matchesPlatform && matchesAvailability
+    );
+  });
 
   if (loading) return <p>Loading Games...</p>;
 
@@ -74,7 +93,12 @@ const GameList = () => {
       )}
       {showFilterModal && (
         <Filter
-          currentFilters={filters}
+          selectedGenre={selectedGenre}
+          setSelectedGenre={setSelectedGenre}
+          selectedPlatform={selectedPlatform}
+          setSelectedPlatform={setSelectedPlatform}
+          selectedAvailability={selectedAvailability}
+          setSelectedAvailability={setSelectedAvailability}
           onClose={() => setShowFilterModal(false)}
           onApply={handleApplyFilters}
         />
