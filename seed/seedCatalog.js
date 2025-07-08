@@ -51,7 +51,9 @@ async function insertGamesIntoSupabase(games) {
   const formatted = games.map((game) => ({
     igdb_id: game.id,
     title: game.name,
-    cover_image: game.cover ? `https:${game.cover.url}` : null,
+    cover_image: game.cover
+      ? `https:${game.cover.url.replace("t_thumb", "t_original")}`
+      : null,
     platform: game.platforms?.map((p) => p.name).join(", ") || "",
     genre: game.genres?.map((g) => g.name).join(", ") || "",
     synopsis: game.summary || "No synopsis",
