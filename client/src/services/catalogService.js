@@ -35,18 +35,14 @@ export const fetchAllGenres = async () => {
   const uniqueGenres = Array.from(new Set(allGenres));
   return uniqueGenres.sort();
 };
-
+//Function to fetch all possible platforms in catalog
 export const fetchAllPlatforms = async () => {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("catalog")
     .select("platform")
     .neq("platform", "")
     .order("platform", { ascending: true });
 
-  if (error) {
-    console.error("Error fetching platforms:", error);
-    return [];
-  }
   const platformSet = new Set();
   data.forEach((item) => {
     if (item.platform) {
@@ -54,4 +50,14 @@ export const fetchAllPlatforms = async () => {
     }
   });
   return Array.from(platformSet).sort();
+};
+
+//function to fetch all games available for borrowing and lending in catalog.
+export const fetchAvailableCatalogIds = async () => {
+  const { data } = await supabase
+    .from("games")
+    .select("catalog_id")
+    .eq("available", true);
+
+  return [...new Set(data.map((item) => item.catalog_id))];
 };
