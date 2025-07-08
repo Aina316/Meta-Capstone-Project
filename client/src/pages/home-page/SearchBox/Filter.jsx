@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { fetchAllGenres } from "../../../services/catalogService";
 import "./Filter.css";
 
-const Filter = ({ currentFilters, onClose, onApply }) => {
-  const [availability, setAvailability] = useState(currentFilters.availability);
-  const [platform, setPlatform] = useState(currentFilters.platform);
-  const [genre, setGenre] = useState(currentFilters.genre);
+const Filter = ({ onClose, onApply }) => {
+  const [allAvailableGenres, setAllAvailableGenres] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState("");
+
+  useEffect(() => {
+    const loadGenres = async () => {
+      const genres = await fetchAllGenres();
+      setAllAvailableGenres(genres);
+    };
+    loadGenres();
+  }, []); // This loads the genre options into filter modal
 
   const handleApply = () => {
-    onApply({ availability, platform, genre });
+    onApply({ genre: selectedGenre });
+    onClose();
   };
-
   return (
     <div className="filter-modal-overlay">
       <div className="filter-modal-content">
@@ -18,36 +26,20 @@ const Filter = ({ currentFilters, onClose, onApply }) => {
         </button>
         <h2>Filter Games</h2>
 
-        <div className="filter-section">
-          <label>Availability:</label>
+        <label>
+          Genre:{" "}
           <select
-            value={availability}
-            onChange={(e) => setAvailability(e.target.value)}
+            value={selectedGenre}
+            onChange={(e) => setSelectedGenre(e.target.value)}
           >
-            <option value="all">All</option>
-            <option value="available">Available only</option>
+            <option value="">All</option>
+            {allAvailableGenres.map((genre) => (
+              <option key={genre} value={genre}>
+                {genre}
+              </option>
+            ))}
           </select>
-        </div>
-
-        <div className="filter-section">
-          <label>Platform:</label>
-          <input
-            type="text"
-            value={platform}
-            placeholder="e.g. PC, Xbox"
-            onChange={(e) => setPlatform(e.target.value)}
-          />
-        </div>
-
-        <div className="filter-section">
-          <label>Genre:</label>
-          <input
-            type="text"
-            value={genre}
-            placeholder="e.g. , Strategy"
-            onChange={(e) => setGenre(e.target.value)}
-          />
-        </div>
+        </label>
 
         <button className="apply-btn" onClick={handleApply}>
           Apply Filters
