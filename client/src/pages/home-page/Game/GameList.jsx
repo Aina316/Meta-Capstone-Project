@@ -13,16 +13,7 @@ const GameList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGame, setSelectedGame] = useState(null);
   const [showFilterModal, setShowFilterModal] = useState(false);
-  const [filters, setFilters] = useState({
-    availability: "all",
-    platform: "",
-    genre: "",
-  });
-
-  const handleApplyFilters = (newFilters) => {
-    setFilters(newFilters);
-    setShowFilterModal(false);
-  };
+  const [filters, setFilters] = useState({});
 
   const handleGameClick = (game) => {
     setSelectedGame(game);
@@ -42,16 +33,15 @@ const GameList = () => {
     loadCatalog();
   }, []);
 
-  const filtered = catalog
-    .filter((game) =>
-      game.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .filter((game) => {
-      if (filters.availability === "available" && !game.available) return false;
-      if (filters.platform && game.platform !== filters.platform) return false;
-      if (filters.genre && game.genre !== filters.genre) return false;
-      return true;
-    });
+  const filtered = catalog.filter((game) => {
+    const matchesQuery = game.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesGenre =
+      !filters.genre ||
+      game.genre?.toLowerCase().includes(filters.genre.toLowerCase());
+    return matchesGenre && matchesQuery;
+  });
 
   if (loading) return <p>Loading Games...</p>;
 
@@ -74,9 +64,8 @@ const GameList = () => {
       )}
       {showFilterModal && (
         <Filter
-          currentFilters={filters}
           onClose={() => setShowFilterModal(false)}
-          onApply={handleApplyFilters}
+          onApply={setFilters}
         />
       )}
     </div>

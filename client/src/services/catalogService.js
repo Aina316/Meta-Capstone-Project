@@ -17,7 +17,7 @@ export const fetchCatalogGameById = async (catalogId) => {
   return { data, error };
 };
 
-//function to extract all possible genres for games in catalog table
+//Function to extract all possible genres for games in catalog table
 export const fetchAllGenres = async () => {
   const { data, error } = await supabase.from("catalog").select("genre");
 
