@@ -7,13 +7,15 @@ import GameDetails from "../../../components/GameDetails";
 import "./GameList.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
+
 const GameList = () => {
   const [catalog, setCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGame, setSelectedGame] = useState(null);
   const [showFilterModal, setShowFilterModal] = useState(false);
-  const [filters, setFilters] = useState({});
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState("");
 
   const handleGameClick = (game) => {
     setSelectedGame(game);
@@ -33,14 +35,16 @@ const GameList = () => {
     loadCatalog();
   }, []);
 
+  const handleApplyFilters = () => {
+    setShowFilterModal(false);
+  };
+
   const filtered = catalog.filter((game) => {
-    const matchesQuery = game.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesGenre =
-      !filters.genre ||
-      game.genre?.toLowerCase().includes(filters.genre.toLowerCase());
-    return matchesGenre && matchesQuery;
+    return (
+      game.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (selectedGenre === "" || game.genre.includes(selectedGenre)) &&
+      (selectedPlatform === "" || game.platform.includes(selectedPlatform))
+    );
   });
 
   if (loading) return <p>Loading Games...</p>;
@@ -64,8 +68,12 @@ const GameList = () => {
       )}
       {showFilterModal && (
         <Filter
+          selectedGenre={selectedGenre}
+          setSelectedGenre={setSelectedGenre}
+          selectedPlatform={selectedPlatform}
+          setSelectedPlatform={setSelectedPlatform}
           onClose={() => setShowFilterModal(false)}
-          onApply={setFilters}
+          onApply={handleApplyFilters}
         />
       )}
     </div>
