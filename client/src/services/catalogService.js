@@ -35,3 +35,23 @@ export const fetchAllGenres = async () => {
   const uniqueGenres = Array.from(new Set(allGenres));
   return uniqueGenres.sort();
 };
+
+export const fetchAllPlatforms = async () => {
+  const { data, error } = await supabase
+    .from("catalog")
+    .select("platform")
+    .neq("platform", "")
+    .order("platform", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching platforms:", error);
+    return [];
+  }
+  const platformSet = new Set();
+  data.forEach((item) => {
+    if (item.platform) {
+      item.platform.split(",").forEach((p) => platformSet.add(p.trim()));
+    }
+  });
+  return Array.from(platformSet).sort();
+};
