@@ -1,18 +1,30 @@
 import { useState, useEffect } from "react";
-import { fetchAllGenres } from "../../../services/catalogService";
+import {
+  fetchAllGenres,
+  fetchAllPlatforms,
+} from "../../../services/catalogService";
 import "./Filter.css";
 
-const Filter = ({ onClose, onApply }) => {
-  const [allAvailableGenres, setAllAvailableGenres] = useState([]);
-  const [selectedGenre, setSelectedGenre] = useState("");
+const Filter = ({
+  onClose,
+  onApply,
+  selectedGenre,
+  setSelectedGenre,
+  selectedPlatform,
+  setSelectedPlatform,
+}) => {
+  const [genres, setGenres] = useState([]);
+  const [platforms, setPlatforms] = useState([]);
 
   useEffect(() => {
-    const loadGenres = async () => {
-      const genres = await fetchAllGenres();
-      setAllAvailableGenres(genres);
+    const loadFilters = async () => {
+      const genresList = await fetchAllGenres();
+      const platfromsList = await fetchAllPlatforms();
+      setGenres(genresList);
+      setPlatforms(platfromsList);
     };
-    loadGenres();
-  }, []); // This loads the genre options into filter modal
+    loadFilters();
+  }, []); // This loads the genre and platforms options into the filter modal options for user choice.
 
   const handleApply = () => {
     onApply({ genre: selectedGenre });
@@ -25,22 +37,38 @@ const Filter = ({ onClose, onApply }) => {
           X
         </button>
         <h2>Filter Games</h2>
-
-        <label>
-          Genre:{" "}
-          <select
-            value={selectedGenre}
-            onChange={(e) => setSelectedGenre(e.target.value)}
-          >
-            <option value="">All</option>
-            {allAvailableGenres.map((genre) => (
-              <option key={genre} value={genre}>
-                {genre}
-              </option>
-            ))}
-          </select>
-        </label>
-
+        <div className="filter-section">
+          <label>
+            Genre:
+            <select
+              value={selectedGenre}
+              onChange={(e) => setSelectedGenre(e.target.value)}
+            >
+              <option value="">All Genres</option>
+              {genres.map((genre, idx) => (
+                <option key={idx} value={genre}>
+                  {genre}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <div className="filter-section">
+          <label>
+            Platforms:
+            <select
+              value={selectedPlatform}
+              onChange={(e) => setSelectedPlatform(e.target.value)}
+            >
+              <option value="">All Platforms</option>
+              {platforms.map((platform, idx) => (
+                <option key={idx} value={platform}>
+                  {platform}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
         <button className="apply-btn" onClick={handleApply}>
           Apply Filters
         </button>
