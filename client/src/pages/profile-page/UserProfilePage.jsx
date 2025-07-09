@@ -19,7 +19,6 @@ const UserProfilePage = () => {
         .single();
 
       if (error) {
-        console.error("Error fetching user profile:", error);
         alert("Could not load user profile.");
       } else {
         setProfile(data);

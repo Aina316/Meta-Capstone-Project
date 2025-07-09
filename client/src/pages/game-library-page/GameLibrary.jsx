@@ -21,7 +21,6 @@ const GameLibrary = () => {
       .eq("owner_id", user.id);
 
     if (error) {
-      console.error("Error fetching games:", error);
       setOwnedGames([]);
     } else {
       setOwnedGames(data);
@@ -42,7 +41,6 @@ const GameLibrary = () => {
       .eq("owner_id", user.id);
 
     if (error) {
-      console.error("Delete error:", error);
       alert("Failed to delete game from your library.");
     } else {
       loadLibrary();

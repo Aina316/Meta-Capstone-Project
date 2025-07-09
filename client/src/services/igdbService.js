@@ -27,7 +27,6 @@ export const fetchGame = async (searchTitle) => {
     });
 
     if (!response.ok) {
-      console.error(await response.text());
       throw new Error(`IGDB API error: ${response.status}`);
     }
 
@@ -50,7 +49,6 @@ export const fetchGame = async (searchTitle) => {
       summary: game.summary || "",
     };
   } catch (error) {
-    console.error("Error fetching from IGDB:", error);
     return null;
   }
 };

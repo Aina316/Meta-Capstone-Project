@@ -19,7 +19,6 @@ const GameDetails = ({ catalogGame, onClose }) => {
         catalogGame.id
       );
       if (error) {
-        console.error("Error loading owners:", error);
         setOwners([]);
       } else {
         setOwners(data);
@@ -43,12 +42,10 @@ const GameDetails = ({ catalogGame, onClose }) => {
     });
 
     if (error) {
-      console.error("Borrow request failed:", error);
       alert("Failed to send borrow request.");
     } else {
       const { error: updateError } = await makeGameUnavailable(ownerCopy.id);
       if (updateError) {
-        console.error("Error updating availability:", updateError);
         alert("Failed to update game availability.");
         return;
       }
@@ -56,8 +53,6 @@ const GameDetails = ({ catalogGame, onClose }) => {
       onClose();
     }
   };
-  console.log("owners from supabase: ", owners);
-  console.log("user.id", user.id);
   return (
     <div className="game-details-modal-overlay">
       <div className="game-details-modal-content">

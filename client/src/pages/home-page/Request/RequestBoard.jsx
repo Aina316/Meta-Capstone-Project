@@ -32,7 +32,6 @@ const RequestBoard = () => {
     }
 
     if (error) {
-      console.error("Error fetching requests:", error);
       alert("Failed to load requests.");
       setRequests([]);
     } else {

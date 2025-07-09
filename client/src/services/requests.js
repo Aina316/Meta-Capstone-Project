@@ -63,7 +63,6 @@ export const createBorrowRequest = async ({
   if (error) return { error };
 
   if (user.id === lenderId) {
-    console.log("Skipping notification to self");
     return { error: null };
   }
 

@@ -23,7 +23,6 @@ const AddGameModal = ({ userId, onClose, onGameAdded }) => {
         .limit(20);
 
       if (error) {
-        console.error("Catalog search error:", error);
         alert("Error searching catalog.");
       } else {
         setResults(data);
@@ -48,7 +47,6 @@ const AddGameModal = ({ userId, onClose, onGameAdded }) => {
     ]);
 
     if (error) {
-      console.error("Add game error:", error);
       alert("Failed to add game.");
     } else {
       alert(`${item.title} added to your library!`);

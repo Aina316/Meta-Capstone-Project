@@ -6,17 +6,14 @@ export const createNotification = async ({ userId, message, type }) => {
     error: authError,
   } = await supabase.auth.getUser();
   if (authError) {
-    console.error("Error getting current user:", authError);
     return { error: authError };
   }
 
   if (!userId || !message) {
-    console.error("Missing userId or message for notification");
     return { error: new Error("Invalid notification payload") };
   }
 
   if (userId === user.id) {
-    console.log("Skipping notification to self");
     return { error: null };
   }
 
