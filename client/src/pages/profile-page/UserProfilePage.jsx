@@ -42,7 +42,12 @@ const UserProfilePage = () => {
         <h2>{profile.username}'s Profile</h2>
         <img src={profile.image || image} alt="Avatar" />
         <p className="profile-bio">{profile.bio}</p>
-
+        <button
+          onClick={() => (window.location.href = `/profile/${userId}/library`)}
+          className="view-library-btn"
+        >
+          View {profile.username}'s Game Library
+        </button>
         <div className="profile-scores">
           <p>
             <strong>Lender Score:</strong> {profile.lender_score}
