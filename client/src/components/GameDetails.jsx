@@ -3,12 +3,14 @@ import { useAuth } from "../context/authContext";
 import image from "../assets/images/default_avatar.jpg";
 import { createBorrowRequest, makeGameUnavailable } from "../services/requests";
 import { fetchAvailableCopiesByCatalogId } from "../services/gameService";
+import BorrowRequestDateModal from "./BorrowRequestDateModal";
 import "../App.css";
 
 const GameDetails = ({ catalogGame, onClose }) => {
   const { user } = useAuth();
   const [owners, setOwners] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOwner, setSelectedOwner] = useState(null);
 
   if (!catalogGame) return null;
 
@@ -19,6 +21,7 @@ const GameDetails = ({ catalogGame, onClose }) => {
         catalogGame.id
       );
       if (error) {
+        console.error("Error loading owners:", error);
         setOwners([]);
       } else {
         setOwners(data);
@@ -29,30 +32,40 @@ const GameDetails = ({ catalogGame, onClose }) => {
     loadOwners();
   }, [catalogGame]);
 
-  const handleBorrow = async (ownerCopy) => {
-    if (!user) {
-      alert("You need to be logged in to borrow a game.");
-      return;
-    }
+  const handleBorrow = (ownerCopy) => {
+    setSelectedOwner(ownerCopy);
+  };
+
+  const handleConfirmRequest = async (startDate, returnDate) => {
+    if (!user || !selectedOwner) return;
 
     const { error } = await createBorrowRequest({
-      lenderId: ownerCopy.owner.id,
-      gameId: ownerCopy.id,
+      lenderId: selectedOwner.owner.id,
+      gameId: selectedOwner.id,
       gameTitle: catalogGame.title,
+      startDate,
+      returnDate,
     });
 
     if (error) {
+      console.error("Borrow request failed:", error);
       alert("Failed to send borrow request.");
     } else {
-      const { error: updateError } = await makeGameUnavailable(ownerCopy.id);
+      const { error: updateError } = await makeGameUnavailable(
+        selectedOwner.id
+      );
       if (updateError) {
+        console.error("Error updating availability:", updateError);
         alert("Failed to update game availability.");
         return;
       }
       alert("Borrow request sent!");
       onClose();
     }
+
+    setSelectedOwner(null);
   };
+
   return (
     <div className="game-details-modal-overlay">
       <div className="game-details-modal-content">
@@ -93,20 +106,25 @@ const GameDetails = ({ catalogGame, onClose }) => {
                 <p>Condition: {copy.condition}</p>
               </div>
 
-              {copy.owner?.id !== user?.id ? (
+              {user.id !== copy.owner.id && (
                 <button
                   className="borrow-btn"
                   onClick={() => handleBorrow(copy)}
                 >
                   Borrow
                 </button>
-              ) : (
-                <p className="own-copy-note">Owned</p>
               )}
             </div>
           ))}
         </div>
       </div>
+
+      {selectedOwner && (
+        <BorrowRequestDateModal
+          onClose={() => setSelectedOwner(null)}
+          onSubmit={handleConfirmRequest}
+        />
+      )}
     </div>
   );
 };
