@@ -7,6 +7,7 @@ import HomePage from "./pages/home-page/HomePage/HomePage";
 import ProfilePage from "./pages/profile-page/ProfilePage";
 import GameLibrary from "./pages/game-library-page/GameLibrary";
 import UserProfilePage from "./pages/profile-page/UserProfilePage";
+import NotificationsPage from "./pages/notifications-page/NotificationsPage";
 import "./App.css";
 
 function App() {
@@ -21,6 +22,14 @@ function App() {
         element={
           <PrivateRoute>
             <HomePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <PrivateRoute>
+            <NotificationsPage />
           </PrivateRoute>
         }
       />
@@ -40,6 +49,7 @@ function App() {
           </PrivateRoute>
         }
       />
+
       <Route
         path="/profile/:userId"
         element={

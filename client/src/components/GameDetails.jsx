@@ -39,6 +39,7 @@ const GameDetails = ({ catalogGame, onClose }) => {
     const { error } = await createBorrowRequest({
       lenderId: ownerCopy.owner.id,
       gameId: ownerCopy.id,
+      gameTitle: catalogGame.title,
     });
 
     if (error) {
@@ -96,9 +97,17 @@ const GameDetails = ({ catalogGame, onClose }) => {
                 <p>Lender Score: {copy.owner?.lender_score ?? "N/A"}</p>
                 <p>Condition: {copy.condition}</p>
               </div>
-              <button className="borrow-btn" onClick={() => handleBorrow(copy)}>
-                Borrow
-              </button>
+
+              {copy.owner?.id !== user?.id ? (
+                <button
+                  className="borrow-btn"
+                  onClick={() => handleBorrow(copy)}
+                >
+                  Borrow
+                </button>
+              ) : (
+                <p className="own-copy-note">Owned</p>
+              )}
             </div>
           ))}
         </div>

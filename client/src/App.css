@@ -150,3 +150,32 @@
 .owner-info {
   flex: 1;
 }
+
+.notifications-link {
+  position: relative;
+  margin-right: 20px;
+  margin-top: 25px;
+  color: #fff;
+}
+
+.notification-count {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+}
+
+.bell-icon {
+  height: 30px;
+  width: 30px;
+}
+
+.own-copy-note {
+  font-style: italic;
+  color: #555;
+  margin-top: 8px;
+}
