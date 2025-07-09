@@ -46,7 +46,12 @@ const RequestBoard = () => {
   }, [user, boardView]);
 
   const handleDecline = async (requestId) => {
-    const { error } = await updateDenialStatus(requestId, "Declined");
+    const { error } = await updateDenialStatus(
+      requestId,
+      "Declined",
+      selectedRequest.borrower?.id,
+      selectedRequest.game?.title
+    );
     if (error) {
       alert("Failed to decline request");
     } else {
@@ -65,7 +70,9 @@ const RequestBoard = () => {
     const { error } = await updateApprovalStatus(
       selectedRequest.id,
       "Accepted",
-      instructions
+      instructions,
+      selectedRequest.borrower?.id,
+      selectedRequest.game?.title
     );
     if (error) {
       alert("Failed to approve request");
