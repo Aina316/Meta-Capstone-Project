@@ -20,7 +20,7 @@ const UserGameLibrary = () => {
         .eq("id", userId)
         .single();
 
-      if (profileError) console.error("Error loading profile:", profileError);
+      if (profileError) return;
       else setOwnerProfile(profile);
 
       const { data: userGames, error } = await supabase
@@ -29,7 +29,6 @@ const UserGameLibrary = () => {
         .eq("owner_id", userId);
 
       if (error) {
-        console.error("Error loading games:", error);
         setGames([]);
       } else {
         setGames(userGames);

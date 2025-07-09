@@ -33,7 +33,7 @@ const GameList = () => {
   useEffect(() => {
     const loadCatalog = async () => {
       const { data, error } = await fetchGamesCatalog();
-      if (error) console.error(error);
+      if (error) return;
       else setCatalog(data);
       setLoading(false);
     };

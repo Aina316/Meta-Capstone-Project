@@ -17,7 +17,7 @@ const NotificationsPage = () => {
     setLoading(true);
     if (!user) return;
     const { data, error } = await fetchNotificationsForUser(user.id);
-    if (error) console.error(error);
+    if (error) return;
     else setNotifications(data);
     setLoading(false);
   };

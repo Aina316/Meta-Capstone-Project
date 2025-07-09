@@ -33,7 +33,13 @@ export const fetchRequestsForBorrower = async (borrowerId) => {
   return { data, error };
 };
 
-export const createBorrowRequest = async ({ lenderId, gameId, gameTitle }) => {
+export const createBorrowRequest = async ({
+  lenderId,
+  gameId,
+  gameTitle,
+  startDate,
+  returnDate,
+}) => {
   const {
     data: { user },
     error: authError,
@@ -49,10 +55,17 @@ export const createBorrowRequest = async ({ lenderId, gameId, gameTitle }) => {
       lender_id: lenderId,
       game_id: gameId,
       status: "Pending",
+      start_date: startDate,
+      return_date: returnDate,
     },
   ]);
 
   if (error) return { error };
+
+  if (user.id === lenderId) {
+    console.log("Skipping notification to self");
+    return { error: null };
+  }
 
   await createNotification({
     userId: lenderId,
