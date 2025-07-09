@@ -21,7 +21,6 @@ const GameDetails = ({ catalogGame, onClose }) => {
         catalogGame.id
       );
       if (error) {
-        console.error("Error loading owners:", error);
         setOwners([]);
       } else {
         setOwners(data);
@@ -48,14 +47,12 @@ const GameDetails = ({ catalogGame, onClose }) => {
     });
 
     if (error) {
-      console.error("Borrow request failed:", error);
       alert("Failed to send borrow request.");
     } else {
       const { error: updateError } = await makeGameUnavailable(
         selectedOwner.id
       );
       if (updateError) {
-        console.error("Error updating availability:", updateError);
         alert("Failed to update game availability.");
         return;
       }
@@ -106,13 +103,15 @@ const GameDetails = ({ catalogGame, onClose }) => {
                 <p>Condition: {copy.condition}</p>
               </div>
 
-              {user.id !== copy.owner.id && (
+              {copy.owner?.id !== user?.id ? (
                 <button
                   className="borrow-btn"
                   onClick={() => handleBorrow(copy)}
                 >
                   Borrow
                 </button>
+              ) : (
+                <p className="own-copy-note">Owned</p>
               )}
             </div>
           ))}
