@@ -66,19 +66,23 @@ const RequestBoard = () => {
 
   const handleApprove = async (instructions) => {
     if (!selectedRequest) return;
+
     const { error } = await updateApprovalStatus(
       selectedRequest.id,
       "Accepted",
       instructions,
-      selectedRequest.borrower?.id,
-      selectedRequest.game?.title
+      selectedRequest.borrower.id,
+      selectedRequest.game.id,
+      selectedRequest.game.title
     );
+
     if (error) {
       alert("Failed to approve request");
     } else {
       alert("Request approved!");
       loadRequests();
     }
+
     setShowApproveModal(false);
   };
 
