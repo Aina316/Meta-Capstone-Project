@@ -88,6 +88,7 @@ export const updateApprovalStatus = async (
   newStatus,
   instructions,
   borrowerId,
+  gameId,
   gameTitle
 ) => {
   const { error } = await supabase
@@ -102,6 +103,32 @@ export const updateApprovalStatus = async (
     message: `Your borrow request for "${gameTitle}" was accepted.`,
     type: "accepted",
   });
+
+  const { error: declineError } = await supabase
+    .from("requests")
+    .update({ status: "Declined" })
+    .neq("id", requestId)
+    .eq("game_id", gameId)
+    .eq("status", "Pending");
+
+  if (declineError) return;
+  const { data: declinedRequests, error: fetchDeclinedError } = await supabase
+    .from("requests")
+    .select("borrower_id")
+    .eq("game_id", gameId)
+    .eq("status", "Declined");
+
+  if (fetchDeclinedError) {
+    return;
+  } else {
+    for (const req of declinedRequests) {
+      await createNotification({
+        userId: req.borrower_id,
+        message: `Your borrow request for "${gameTitle}" was declined.`,
+        type: "declined",
+      });
+    }
+  }
 
   return { error: null };
 };
