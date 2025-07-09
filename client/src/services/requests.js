@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient";
+import { createNotification } from "./notificationService";
 
 export const fetchRequestsForLender = async (lenderId) => {
   const { data, error } = await supabase
@@ -24,7 +25,6 @@ export const fetchRequestsForBorrower = async (borrowerId) => {
         *,
         lender: profiles!requests_lender_id_fkey(id, username, image, lender_score),
         game: games(id, title)
-
       `
     )
     .eq("borrower_id", borrowerId)
@@ -33,7 +33,7 @@ export const fetchRequestsForBorrower = async (borrowerId) => {
   return { data, error };
 };
 
-export const createBorrowRequest = async ({ lenderId, gameId }) => {
+export const createBorrowRequest = async ({ lenderId, gameId, gameTitle }) => {
   const {
     data: { user },
     error: authError,
@@ -51,7 +51,16 @@ export const createBorrowRequest = async ({ lenderId, gameId }) => {
       status: "Pending",
     },
   ]);
-  return { error };
+
+  if (error) return { error };
+
+  await createNotification({
+    userId: lenderId,
+    message: `You have a new borrow request for "${gameTitle}".`,
+    type: "new_request",
+  });
+
+  return { error: null };
 };
 
 export const makeGameUnavailable = async (gameId) => {
@@ -65,20 +74,44 @@ export const makeGameUnavailable = async (gameId) => {
 export const updateApprovalStatus = async (
   requestId,
   newStatus,
-  instructions
+  instructions,
+  borrowerId,
+  gameTitle
 ) => {
   const { error } = await supabase
     .from("requests")
     .update({ status: newStatus, share_instructions: instructions })
     .eq("id", requestId);
-  return { error };
+
+  if (error) return { error };
+
+  await createNotification({
+    userId: borrowerId,
+    message: `Your borrow request for "${gameTitle}" was accepted.`,
+    type: "accepted",
+  });
+
+  return { error: null };
 };
 
-export const updateDenialStatus = async (requestId, newStatus) => {
+export const updateDenialStatus = async (
+  requestId,
+  newStatus,
+  borrowerId,
+  gameTitle
+) => {
   const { error } = await supabase
     .from("requests")
     .update({ status: newStatus })
     .eq("id", requestId);
 
-  return { error };
+  if (error) return { error };
+
+  await createNotification({
+    userId: borrowerId,
+    message: `Your borrow request for "${gameTitle}" was declined.`,
+    type: "declined",
+  });
+
+  return { error: null };
 };
