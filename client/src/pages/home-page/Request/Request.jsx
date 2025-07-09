@@ -21,6 +21,15 @@ const Request = ({ request, perspective, onApprove, onDecline }) => {
           <p className="game-title">
             Game: <strong>{request.game?.title || "Unknown Game"}</strong>
           </p>
+
+          {request.start_date && request.return_date && (
+            <p>
+              Borrowing: From{" "}
+              {new Date(request.start_date).toLocaleDateString()} to{" "}
+              {new Date(request.return_date).toLocaleDateString()}
+            </p>
+          )}
+
           {perspective === "lender" && (
             <p>Borrower Score: {otherUser?.borrower_score ?? "N/A"}</p>
           )}
