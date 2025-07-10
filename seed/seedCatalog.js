@@ -32,7 +32,7 @@ async function fetchIGDBGames(accessToken) {
     fields id, name, cover.url, genres.name, platforms.name, summary;
     where cover != null & genres != null & platforms != null;
     sort popularity desc;
-    limit 300;
+    limit 500;
   `;
 
   const res = await fetch(IGDB_URL, {
