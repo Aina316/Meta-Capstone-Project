@@ -45,6 +45,7 @@ const ProfilePage = () => {
         <img src={profile.image || image} alt="Avatar" />
         <h3>{profile?.username}</h3>
         <p className="profile-bio">{profile?.bio}</p>
+        <p className="profile-location">Location: {profile?.location}</p>
         <div className="profile-scores">
           <p>
             <strong>Lender Score:</strong> {profile.lender_score}

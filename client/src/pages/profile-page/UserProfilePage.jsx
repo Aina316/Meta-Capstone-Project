@@ -41,6 +41,7 @@ const UserProfilePage = () => {
         <h2>{profile.username}'s Profile</h2>
         <img src={profile.image || image} alt="Avatar" />
         <p className="profile-bio">{profile.bio}</p>
+        <p className="profile-location">Location: {profile.location}</p>
         <button
           onClick={() => (window.location.href = `/profile/${userId}/library`)}
           className="view-library-btn"

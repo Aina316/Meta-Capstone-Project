@@ -8,6 +8,7 @@ const EditProfile = ({ profile, onClose, onUpdatedProfile }) => {
   const [username, setUsername] = useState(profile?.username || "");
   const [bio, setBio] = useState(profile?.bio || "");
   const [image, setImage] = useState(profile?.image);
+  const [location, setLocation] = useState(profile?.location || "Unknown");
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
   const handleSave = async () => {
@@ -16,6 +17,7 @@ const EditProfile = ({ profile, onClose, onUpdatedProfile }) => {
       username,
       bio,
       image,
+      location,
     });
     setSaving(false);
 
@@ -53,7 +55,11 @@ const EditProfile = ({ profile, onClose, onUpdatedProfile }) => {
           onChange={(e) => setBio(e.target.value)}
           placeholder="Bio"
         />
-
+        <textarea
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          placeholder="Your New City or Region"
+        />
         <button onClick={handleSave} disabled={saving}>
           {saving ? "Saving..." : "Save Changes"}
         </button>
