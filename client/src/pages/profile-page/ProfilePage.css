@@ -34,7 +34,12 @@
   margin-bottom: 20px;
   padding: 0 10px;
 }
-
+.profile-location {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
 .profile-scores {
   display: flex;
   justify-content: space-around;
