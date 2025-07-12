@@ -1,4 +1,3 @@
-// src/pages/login-page/Login.jsx
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "../../services/supabaseClient";
@@ -36,7 +35,6 @@ const Login = () => {
       return;
     }
 
-    // Check profile completeness
     const { data: userData } = await supabase.auth.getUser();
     const userId = userData?.user?.id;
 
