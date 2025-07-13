@@ -3,15 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../services/supabaseClient";
 import { uploadAvatar } from "../../services/uploadAvatar";
 import { useAuth } from "../../context/authContext";
+import LocationAutocomplete from "../../components/LocationAutocomplete";
+import FavoriteGenresModal from "./FavoriteGenresModal";
 import "./NewUserPage.css";
 
 const NewUserPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const [showGenreModal, setShowGenreModal] = useState(false);
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [saving, setSaving] = useState(false);
@@ -22,15 +25,22 @@ const NewUserPage = () => {
     } else {
       supabase
         .from("profiles")
-        .select("username, bio, location, image")
+        .select("username, bio, location, latitude, longitude, image")
         .eq("id", user.id)
         .single()
         .then(({ data }) => {
           if (data) {
             setUsername(data.username || "");
             setBio(data.bio || "");
-            setLocation(data.location || "");
             setAvatarUrl(data.image || "");
+
+            if (data.location && data.latitude && data.longitude) {
+              setLocation({
+                short_label: data.location,
+                latitude: data.latitude,
+                longitude: data.longitude,
+              });
+            }
           }
         });
     }
@@ -63,7 +73,9 @@ const NewUserPage = () => {
     const updates = {
       username,
       bio,
-      location,
+      location: location?.short_label || "",
+      latitude: location?.latitude || null,
+      longitude: location?.longitude || null,
       image: publicUrl,
       previousUser: true,
     };
@@ -75,12 +87,23 @@ const NewUserPage = () => {
 
     if (error) {
       alert("Failed to save profile");
-      console.error(error);
     } else {
-      navigate("/login");
+      setShowGenreModal(true);
     }
-
     setSaving(false);
+  };
+
+  const handleFavoriteGenreSave = async (selectedGenres) => {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ favorite_genres: selectedGenres })
+      .eq("id", user.id);
+
+    if (error) {
+      alert("Failed to save favorite genres");
+    } else {
+      navigate("/home");
+    }
   };
 
   return (
@@ -112,13 +135,7 @@ const NewUserPage = () => {
 
           <div>
             <label className="input-label">Location</label>
-            <input
-              type="text"
-              className="input-field"
-              placeholder="Your City or Region"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
+            <LocationAutocomplete value={location} onChange={setLocation} />
           </div>
 
           <div>
@@ -137,12 +154,17 @@ const NewUserPage = () => {
               />
             )}
           </div>
-
           <button className="submit-btn" type="submit" disabled={saving}>
             {saving ? "Saving…" : "Save Profile"}
           </button>
         </form>
       </div>
+      {showGenreModal && (
+        <FavoriteGenresModal
+          onSave={handleFavoriteGenreSave}
+          onClose={() => setShowGenreModal(false)}
+        />
+      )}
     </div>
   );
 };
