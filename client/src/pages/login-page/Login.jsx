@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { supabase } from "../../services/supabaseClient";
+import { signIn } from "../../services/authentication";
 import "./Login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { signIn } from "../../services/authentication";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
-    setVisible(!visible);
+    setVisible((v) => !v);
   };
 
   const handleLogin = async () => {
@@ -28,15 +29,35 @@ const Login = () => {
     }
 
     const { error: loginError } = await signIn(email, password);
-
     if (loginError) {
       setError(loginError.message);
       setLoading(false);
       return;
     }
 
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData?.user?.id;
+
+    if (!userId) {
+      navigate("/home");
+      return;
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("bio, location")
+      .eq("id", userId)
+      .single();
+
     setLoading(false);
-    navigate("/home");
+
+    if (profileError || !profile) {
+      navigate("/home");
+    } else if (!profile.bio || !profile.location) {
+      navigate("/newuser");
+    } else {
+      navigate("/home");
+    }
   };
 
   return (
@@ -44,43 +65,45 @@ const Login = () => {
       <main className="login-component">
         <div className="login-component-content">
           <h2>Login to Gamers Den!</h2>
+
           <div className="email-login">
             <p>Email</p>
             <input
               type="text"
-              name="email"
-              id="email-login"
-              required
               placeholder="Email"
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+
           <div className="password-login">
             <p>Password</p>
             <div className="password-input-box">
               <input
                 type={visible ? "text" : "password"}
-                name="password"
-                pattern="[0-9a-fA-F]{4,8}"
                 placeholder="Password"
-                required
                 onChange={(e) => setPassword(e.target.value)}
               />
               <FontAwesomeIcon
-                className="show-password"
-                icon={visible ? faEye : faEyeSlash}
+                icon={visible ? faEyeSlash : faEye}
                 onClick={togglePasswordVisibility}
+                className="show-password"
               />
             </div>
           </div>
 
-          <button className="login-btn" onClick={handleLogin}>
-            {loading ? "Logging in..." : "Log In"}{" "}
+          <button
+            className="login-btn"
+            onClick={handleLogin}
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Log In"}
           </button>
+
           <p>
-            Don't have a Gamers Den Account? <Link to="/signup">Signup</Link>
+            Don’t have a Gamers Den account? <Link to="/signup">Sign up</Link>
           </p>
-          {error && <p style={{ color: "red" }}>{error}</p>}
+
+          {error && <p className="error-text">{error}</p>}
         </div>
       </main>
     </div>

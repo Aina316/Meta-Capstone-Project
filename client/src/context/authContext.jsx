@@ -5,13 +5,34 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const getProfile = async (id) => {
+    if (!id) return;
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (!error) {
+      setProfile(data);
+    }
+  };
+
+  const reloadProfile = async () => {
+    if (user?.id) {
+      await getProfile(user.id);
+    }
+  };
 
   useEffect(() => {
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data?.session?.user) {
         setUser(data.session.user);
+        await getProfile(data.session.user.id);
       }
       setLoading(false);
     };
@@ -21,6 +42,11 @@ export const AuthProvider = ({ children }) => {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
+        if (session?.user) {
+          getProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
       }
     );
 
@@ -30,7 +56,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, profile, loading, reloadProfile }}>
       {children}
     </AuthContext.Provider>
   );
