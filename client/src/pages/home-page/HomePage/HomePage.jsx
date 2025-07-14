@@ -5,12 +5,14 @@ import Header from "../../../components/Header";
 import RequestBoard from "../Request/RequestBoard";
 import { useAuth } from "../../../context/authContext";
 import { recommendGamesForUser } from "../../../services/recommendationService";
+import { saveRecommendationFeedback } from "../../../services/feedbackService";
 
 const HomePage = () => {
   const { user } = useAuth();
   const [recommendations, setRecommendations] = useState([]);
   const [loadingRecs, setLoadingRecs] = useState(true);
   const [recError, setRecError] = useState("");
+  const [feedbackStatus, setFeedbackStatus] = useState({});
 
   useEffect(() => {
     const loadRecommendations = async () => {
@@ -20,7 +22,7 @@ const HomePage = () => {
       }
       try {
         const recs = await recommendGamesForUser(user.id);
-        setRecommendations(recs.slice(0, 3)); // Shows Top 3 Recommendations
+        setRecommendations(recs.slice(0, 3));
       } catch (err) {
         setRecError("Failed to load recommendations.");
       } finally {
@@ -30,6 +32,16 @@ const HomePage = () => {
 
     loadRecommendations();
   }, [user]);
+
+  const handleFeedback = async (gameId, feedback) => {
+    try {
+      await saveRecommendationFeedback(user.id, gameId, feedback);
+      setFeedbackStatus((prev) => ({ ...prev, [gameId]: feedback }));
+    } catch (err) {
+      alert("Failed to save feedback.");
+    }
+  };
+
   return (
     <div className="home-component">
       <Header />
@@ -48,26 +60,50 @@ const HomePage = () => {
               <div className="recommendations-grid">
                 {recommendations.map((game) => (
                   <div key={game.id} className="recommendation-card">
-                    <img
-                      src={game.catalog?.cover_image}
-                      alt={game.catalog?.title}
-                      className="game-image"
-                    />
-                    <h3>{game.catalog?.title}</h3>
-                    <p>
-                      <strong>Platform:</strong> {game.catalog?.platform}
-                    </p>
-                    <p>
-                      <strong>Genres:</strong> {game.catalog?.genre}
-                    </p>
+                    <div className="recommendation-content">
+                      {game.catalog?.cover_image && (
+                        <img
+                          src={game.catalog.cover_image}
+                          alt={game.catalog?.title}
+                          className="game-image"
+                        />
+                      )}
+                      <h3>{game.catalog?.title}</h3>
+                      <p>
+                        <strong>Platform:</strong> {game.catalog?.platform}
+                      </p>
+                      <p>
+                        <strong>Genres:</strong> {game.catalog?.genre}
+                      </p>
+                    </div>
+                    <div className="feedback-buttons">
+                      <button
+                        onClick={() => handleFeedback(game.id, "up")}
+                        disabled={feedbackStatus[game.id] === "up"}
+                        className={
+                          feedbackStatus[game.id] === "up" ? "thumb-active" : ""
+                        }
+                      >
+                        👍
+                      </button>
+                      <button
+                        onClick={() => handleFeedback(game.id, "down")}
+                        disabled={feedbackStatus[game.id] === "down"}
+                        className={
+                          feedbackStatus[game.id] === "down"
+                            ? "thumb-active"
+                            : ""
+                        }
+                      >
+                        👎
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </section>
 
-          {/* Existing Browse Section */}
-          <h2>Browse Games</h2>
           <GameList />
         </div>
 
