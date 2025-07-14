@@ -23,7 +23,6 @@ const PrivateRoute = ({ children }) => {
         .single();
 
       if (error) {
-        console.error("Error fetching profile:", error);
         setProfileComplete(false);
       } else {
         const isComplete = Boolean(data?.bio?.trim() && data?.location?.trim());
