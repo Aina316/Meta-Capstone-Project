@@ -61,8 +61,41 @@ export const fetchAvailableCopiesByCatalogId = async (catalogId) => {
 export async function fetchAvailableGames() {
   const { data, error } = await supabase
     .from("games")
-    .select(`*, catalog: catalog_id(id, title, platform, genre, cover_image)`)
+    .select(
+      `
+      id,
+      available,
+      owner:owner_id (
+        id,
+        username,
+        image,
+        latitude,
+        longitude,
+        borrower_score
+      ),
+      catalog:catalog_id (
+        id,
+        title,
+        platform,
+        genre,
+        cover_image
+      )
+    `
+    )
     .eq("available", true);
+
   if (error) throw error;
   return data || [];
+}
+
+export async function fetchUserOwnedGameIds(userId) {
+  const { data, error } = await supabase
+    .from("games")
+    .select("catalog_id")
+    .eq("owner_id", userId);
+
+  if (error) throw error;
+
+  const ids = data.map((g) => g.catalog_id);
+  return [...new Set(ids)];
 }

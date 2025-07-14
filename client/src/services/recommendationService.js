@@ -1,7 +1,8 @@
 import { fetchUserProfile } from "./profileService";
-import { fetchAvailableGames } from "./gameService";
+import { fetchAvailableGames, fetchUserOwnedGameIds } from "./gameService";
+import { fetchUserFeedback } from "./feedbackService";
 
-//This is the Haversine formula
+//Caluclate Distance using the Haversine Formula
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const toRad = (value) => (value * Math.PI) / 180;
   const R = 6371;
@@ -14,18 +15,30 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-function scoreGame({ userLat, userLon, userGenres, game }) {
-  const distanceWeight = 0.6;
-  const genreWeight = 0.4;
+function scoreGame({ userLat, userLon, userGenres, game, feedbackMap }) {
+  const distanceWeight = 0.5;
+  const genreWeight = 0.3;
+  const releaseWeight = 0.2;
 
-  const distKm = calculateDistance(
-    userLat,
-    userLon,
-    game.latitude,
-    game.longitude
-  );
-  let distanceScore =
-    distKm <= 5 ? 1 : distKm <= 20 ? 0.75 : distKm <= 50 ? 0.5 : 0.2;
+  // Distance Score
+  let distanceScore = 0;
+  if (
+    game.owner?.latitude != null &&
+    game.owner?.longitude != null &&
+    userLat != null &&
+    userLon != null
+  ) {
+    const distKm = calculateDistance(
+      userLat,
+      userLon,
+      game.owner.latitude,
+      game.owner.longitude
+    );
+    distanceScore =
+      distKm <= 5 ? 1 : distKm <= 20 ? 0.75 : distKm <= 50 ? 0.5 : 0.2;
+  } else {
+    alert("Missing Location");
+  }
 
   let genreScore = 0;
   const gameGenres = (game.catalog?.genre || "")
@@ -39,7 +52,24 @@ function scoreGame({ userLat, userLon, userGenres, game }) {
   });
   genreScore = Math.min(genreScore / userGenres.length, 1);
 
-  return distanceWeight * distanceScore + genreWeight * genreScore;
+  let releaseScore = 0.5;
+  if (game.catalog?.release_year) {
+    const now = new Date().getFullYear();
+    const age = now - game.catalog.release_year;
+    releaseScore = age < 3 ? 1 : age < 6 ? 0.75 : age < 10 ? 0.5 : 0.2;
+  }
+
+  let feedbackBoost = 0;
+  if (feedbackMap[game.id] === "up") feedbackBoost = 0.15;
+  else if (feedbackMap[game.id] === "down") feedbackBoost = -1;
+
+  let score =
+    distanceWeight * distanceScore +
+    genreWeight * genreScore +
+    releaseWeight * releaseScore +
+    feedbackBoost;
+
+  return Math.max(0, Math.min(score, 1));
 }
 
 export async function recommendGamesForUser(userId, limit = 10) {
@@ -51,22 +81,35 @@ export async function recommendGamesForUser(userId, limit = 10) {
     ? profile.favorite_genres
     : [];
 
-  // Fetch all available games
+  const ownedCatalogIds = await fetchUserOwnedGameIds(userId);
+  const feedback = await fetchUserFeedback(userId);
+  const feedbackMap = {};
+  feedback.forEach((f) => {
+    feedbackMap[f.game_id] = f.feedback;
+  });
+
   const games = await fetchAvailableGames();
 
-  // Exclude any games owned by the user themselves
-  const filteredGames = games.filter((game) => game.owner_id !== userId);
+  const filteredGames = games.filter(
+    (game) =>
+      game.owner?.id !== userId &&
+      !ownedCatalogIds.includes(game.catalog?.id) &&
+      feedbackMap[game.id] !== "down"
+  );
 
   const scoredGames = filteredGames
-    .map((game) => ({
-      ...game,
-      score: scoreGame({
-        userLat: profile.latitude,
-        userLon: profile.longitude,
-        userGenres,
-        game,
-      }),
-    }))
+    .map((game) => {
+      return {
+        ...game,
+        score: scoreGame({
+          userLat: profile.latitude,
+          userLon: profile.longitude,
+          userGenres,
+          game,
+          feedbackMap,
+        }),
+      };
+    })
     .filter((g) => g.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);

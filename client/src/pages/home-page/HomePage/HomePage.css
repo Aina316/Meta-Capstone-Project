@@ -38,6 +38,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
   max-width: 200px;
@@ -70,4 +71,31 @@
 
 .recommendation-card p strong {
   color: #444;
+}
+
+.feedback-buttons {
+  justify-content: center;
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.feedback-buttons button {
+  background: none;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  margin-right: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.feedback-buttons button:hover {
+  background-color: #f0f0f0;
+}
+
+.feedback-buttons .thumb-active {
+  background-color: #00239b;
+  color: #fff;
+  border-color: #001f80;
 }

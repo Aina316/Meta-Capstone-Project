@@ -29,7 +29,7 @@ async function getIGDBAccessToken() {
 async function fetchIGDBGames(accessToken) {
   const IGDB_URL = "https://api.igdb.com/v4/games";
   const query = `
-    fields id, name, cover.url, genres.name, platforms.name, summary;
+    fields id, name, cover.url, genres.name, platforms.name, summary, release_dates.y;
     where cover != null & genres != null & platforms != null;
     sort popularity desc;
     limit 500;
@@ -46,6 +46,21 @@ async function fetchIGDBGames(accessToken) {
 
   return await res.json();
 }
+function getRandomFloat(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function extractEarliestReleaseYear(release_dates) {
+  if (!release_dates || !Array.isArray(release_dates)) return null;
+
+  const years = release_dates
+    .map((date) => date.y)
+    .filter((y) => typeof y === "number" && y > 1970 && y < 2100);
+
+  if (years.length === 0) return null;
+
+  return Math.min(...years);
+}
 
 async function insertGamesIntoSupabase(games) {
   const formatted = games.map((game) => ({
@@ -57,6 +72,8 @@ async function insertGamesIntoSupabase(games) {
     platform: game.platforms?.map((p) => p.name).join(", ") || "",
     genre: game.genres?.map((g) => g.name).join(", ") || "",
     synopsis: game.summary || "No synopsis",
+    rating: getRandomFloat(1, 10).toFixed(1),
+    release_year: extractEarliestReleaseYear(game.release_dates) || 2020,
   }));
 
   await supabase.from("catalog").delete().neq("genre", "");
