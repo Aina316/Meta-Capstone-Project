@@ -1,5 +1,6 @@
 import { supabase } from "./supabaseClient";
 
+//This gets profile of user that's currently logged in
 export async function getUserProfile() {
   const {
     data: { user },
@@ -16,6 +17,16 @@ export async function getUserProfile() {
   return data;
 }
 
+//This gets any user profile for recommendations
+export async function fetchUserProfile(userId) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
+  if (error) throw error;
+  return data;
+}
 export async function updateUserProfile({
   username,
   bio,

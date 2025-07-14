@@ -57,3 +57,12 @@ export const fetchAvailableCopiesByCatalogId = async (catalogId) => {
 
   return { data, error };
 };
+
+export async function fetchAvailableGames() {
+  const { data, error } = await supabase
+    .from("games")
+    .select(`*, catalog: catalog_id(id, title, platform, genre, cover_image)`)
+    .eq("available", true);
+  if (error) throw error;
+  return data || [];
+}
