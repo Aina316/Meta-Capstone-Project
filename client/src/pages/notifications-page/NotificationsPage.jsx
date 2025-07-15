@@ -6,12 +6,16 @@ import {
   markAllNotificationsAsRead,
   markNotificationAsRead,
 } from "../../services/notificationService";
+import RecommendationModal from "../../components/RecommendationModal";
+import { recommendGamesForUser } from "../../services/recommendationService";
 import "./NotificationsPage.css";
 
 const NotificationsPage = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showRecommendationModal, setShowRecommendationModal] = useState(false);
+  const [modalRecommendations, setModalRecommendations] = useState([]);
 
   const loadNotifications = async () => {
     setLoading(true);
@@ -27,8 +31,21 @@ const NotificationsPage = () => {
   }, [user]);
 
   const handleMarkAsRead = async (id) => {
+    const notif = notifications.find((n) => n.id === id);
     await markNotificationAsRead(id);
     loadNotifications();
+
+    if (notif?.type === "declined") {
+      try {
+        const recs = await recommendGamesForUser(user.id);
+        if (recs.length > 0) {
+          setModalRecommendations(recs);
+          setShowRecommendationModal(true);
+        }
+      } catch (err) {
+        throw err;
+      }
+    }
   };
 
   const handleMarkAll = async () => {
@@ -68,6 +85,12 @@ const NotificationsPage = () => {
             ))}
           </ul>
         </>
+      )}
+      {showRecommendationModal && (
+        <RecommendationModal
+          recommendations={modalRecommendations}
+          onClose={() => setShowRecommendationModal(false)}
+        />
       )}
     </div>
   );
