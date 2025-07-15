@@ -44,13 +44,19 @@ const RequestBoard = () => {
     loadRequests();
   }, [user, boardView]);
 
-  const handleDecline = async (requestId) => {
+  const handleDecline = async (request) => {
+    if (!request) {
+      alert("Invalid request");
+      return;
+    }
+
     const { error } = await updateDenialStatus(
-      requestId,
+      request.id,
       "Declined",
-      selectedRequest.borrower?.id,
-      selectedRequest.game?.title
+      request.borrower?.id,
+      request.game?.title
     );
+
     if (error) {
       alert("Failed to decline request");
     } else {
@@ -121,7 +127,7 @@ const RequestBoard = () => {
               request={req}
               perspective={boardView === "isIncoming" ? "lender" : "borrower"}
               onApprove={() => openApproveModal(req)}
-              onDecline={() => handleDecline(req.id)}
+              onDecline={() => handleDecline(req)}
             />
           ))}
         </div>
