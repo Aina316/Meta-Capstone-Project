@@ -5,6 +5,8 @@ import { uploadAvatar } from "../../services/uploadAvatar";
 import { useAuth } from "../../context/authContext";
 import LocationAutocomplete from "../../components/LocationAutocomplete";
 import FavoriteGenresModal from "./FavoriteGenresModal";
+import FavoritePlatformsModal from "./FavoritePlatformsModal";
+import { updateFavoritePlatforms } from "../../services/profileService";
 import "./NewUserPage.css";
 
 const NewUserPage = () => {
@@ -18,6 +20,8 @@ const NewUserPage = () => {
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [saving, setSaving] = useState(false);
+  const [showPlatformModal, setShowPlatformModal] = useState(false);
+  const [selectedGenres, setSelectedGenres] = useState([]);
 
   useEffect(() => {
     if (!user) {
@@ -93,17 +97,41 @@ const NewUserPage = () => {
     setSaving(false);
   };
 
-  const handleFavoriteGenreSave = async (selectedGenres) => {
-    const { error } = await supabase
+  const handleFavoriteGenreSave = (genres) => {
+    setSelectedGenres(genres);
+    setShowGenreModal(false);
+    setShowPlatformModal(true);
+  };
+
+  const handleFavoritePlatformSave = async (platforms) => {
+    setSaving(true);
+
+    // Save genres first
+    const { error: genreError } = await supabase
       .from("profiles")
       .update({ favorite_genres: selectedGenres })
       .eq("id", user.id);
 
-    if (error) {
+    if (genreError) {
       alert("Failed to save favorite genres");
-    } else {
-      navigate("/home");
+      setSaving(false);
+      return;
     }
+
+    // Then saves platforms next
+    const { error: platformError } = await updateFavoritePlatforms(
+      user.id,
+      platforms
+    );
+
+    if (platformError) {
+      alert("Failed to save favorite platforms");
+      setSaving(false);
+      return;
+    }
+
+    setSaving(false);
+    navigate("/home");
   };
 
   return (
@@ -159,10 +187,17 @@ const NewUserPage = () => {
           </button>
         </form>
       </div>
+
       {showGenreModal && (
         <FavoriteGenresModal
           onSave={handleFavoriteGenreSave}
           onClose={() => setShowGenreModal(false)}
+        />
+      )}
+      {showPlatformModal && (
+        <FavoritePlatformsModal
+          onSave={handleFavoritePlatformSave}
+          onClose={() => setShowPlatformModal(false)}
         />
       )}
     </div>
