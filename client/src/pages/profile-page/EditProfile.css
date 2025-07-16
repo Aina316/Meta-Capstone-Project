@@ -2,34 +2,153 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 1000;
+  align-items: center;
+  z-index: 999;
 }
 
 .profile-update-content {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  background-color: #fff;
-  padding: 20px;
+  background: #fff;
+  max-width: 500px;
   width: 90%;
-  max-width: 400px;
-  border-radius: 8px;
+  max-height: 90vh;
+  padding: 2rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
   position: relative;
+  font-family: Arial, sans-serif;
+}
+
+.profile-update-content h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #00239b;
+  font-size: 1.8rem;
 }
 
 .close-button {
   position: absolute;
-  top: 8px;
+  top: 12px;
   right: 12px;
-  background: none;
   border: none;
-  font-size: 20px;
+  background: none;
+  font-size: 1.5rem;
+  color: #333;
   cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: #00239b;
+}
+
+.avatar-update {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-update input[type="file"] {
+  margin-top: 0.5rem;
+}
+
+.avatar-update button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #00239b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.avatar-update button:hover {
+  background-color: #001f80;
+}
+
+.profile-update-content input[type="text"],
+.profile-update-content textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  background-color: #fafafa;
+}
+
+.profile-update-content input[type="text"]:focus,
+.profile-update-content textarea:focus {
+  border-color: #00239b;
+  outline: none;
+  background-color: #fff;
+}
+
+.profile-update-content textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.profile-update-content h4 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #00239b;
+  font-size: 1.2rem;
+}
+
+.multi-select-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.multi-select-grid button {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.multi-select-grid button:hover {
+  background-color: #e0e0e0;
+}
+
+.multi-select-grid button.selected {
+  background-color: #00239b;
+  color: white;
+  border-color: #00239b;
+}
+
+.profile-update-content button.save-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #00239b;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  margin-top: 1rem;
+}
+
+.profile-update-content button.save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-update-content button.save-button:not(:disabled):hover {
+  background-color: #001f80;
 }
