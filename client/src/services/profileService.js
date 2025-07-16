@@ -58,3 +58,21 @@ export async function updateUserProfile({
 
   return { data, error };
 }
+
+export async function updateFavoritePlatforms(userId, selectedPlatforms) {
+  const { error } = await supabase
+    .from("profiles")
+    .update({ favorite_platforms: selectedPlatforms })
+    .eq("id", userId);
+  return { error };
+}
+
+export async function fetchFavoritePlatforms(userId) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("favorite_platforms")
+    .eq("id", userId)
+    .single();
+  if (error) throw error;
+  return data.favorite_platforms || [];
+}
