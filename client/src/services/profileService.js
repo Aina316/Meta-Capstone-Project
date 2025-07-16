@@ -59,6 +59,7 @@ export async function updateUserProfile({
   return { data, error };
 }
 
+//This adds the users favorite gaming platforms to their profile table
 export async function updateFavoritePlatforms(userId, selectedPlatforms) {
   const { error } = await supabase
     .from("profiles")
@@ -66,7 +67,7 @@ export async function updateFavoritePlatforms(userId, selectedPlatforms) {
     .eq("id", userId);
   return { error };
 }
-
+//This fetches their favorite gaming platforms
 export async function fetchFavoritePlatforms(userId) {
   const { data, error } = await supabase
     .from("profiles")
