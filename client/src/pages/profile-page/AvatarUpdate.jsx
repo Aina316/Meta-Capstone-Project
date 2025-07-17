@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { uploadAvatar } from "../../services/uploadAvatar";
 import { supabase } from "../../services/supabaseClient";
+import "./EditProfile.css";
 
 const AvatarUpdate = ({ onUpload }) => {
   const [file, setFile] = useState(null);
@@ -21,7 +22,9 @@ const AvatarUpdate = ({ onUpload }) => {
         onChange={(e) => setFile(e.target.files[0])}
         accept="image/*"
       />
-      <button onClick={handleUpload}>Upload Avatar</button>
+      <button className="save-button" onClick={handleUpload}>
+        Upload Avatar
+      </button>
     </div>
   );
 };

@@ -9,7 +9,9 @@ export async function getUserProfile() {
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("username, bio, image, location")
+    .select(
+      "username, bio, image, location, favorite_genres, favorite_platforms"
+    )
     .eq("id", user.id)
     .single();
 
@@ -35,6 +37,8 @@ export async function updateUserProfile({
   latitude,
   longitude,
   previousUser,
+  favorite_genres,
+  favorite_platforms,
 }) {
   const {
     data: { user },
@@ -49,6 +53,9 @@ export async function updateUserProfile({
   if (latitude !== undefined) updates.latitude = latitude;
   if (longitude !== undefined) updates.longitude = longitude;
   if (previousUser !== undefined) updates.previousUser = previousUser;
+  if (favorite_genres !== undefined) updates.favorite_genres = favorite_genres;
+  if (favorite_platforms !== undefined)
+    updates.favorite_platforms = favorite_platforms;
 
   const { data, error } = await supabase
     .from("profiles")
@@ -58,7 +65,6 @@ export async function updateUserProfile({
 
   return { data, error };
 }
-
 //This adds the users favorite gaming platforms to their profile table
 export async function updateFavoritePlatforms(userId, selectedPlatforms) {
   const { error } = await supabase

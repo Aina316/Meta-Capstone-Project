@@ -41,7 +41,26 @@ const UserProfilePage = () => {
         <h2>{profile.username}'s Profile</h2>
         <img src={profile.image || image} alt="Avatar" />
         <p className="profile-bio">{profile.bio}</p>
-        <p className="profile-location">Location: {profile.location}</p>
+        <p className="profile-location">Location: {profile?.location}</p>
+
+        {profile.favorite_genres && profile.favorite_genres.length > 0 && (
+          <div className="profile-favorites">
+            <p>
+              <strong>Favorite Genres:</strong>{" "}
+              {profile.favorite_genres.join(", ")}
+            </p>
+          </div>
+        )}
+
+        {profile.favorite_platforms &&
+          profile.favorite_platforms.length > 0 && (
+            <div className="profile-favorites">
+              <p>
+                <strong>Favorite Platforms:</strong>{" "}
+                {profile.favorite_platforms.join(", ")}
+              </p>
+            </div>
+          )}
         <button
           onClick={() => (window.location.href = `/profile/${userId}/library`)}
           className="view-library-btn"
