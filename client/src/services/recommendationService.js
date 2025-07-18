@@ -118,8 +118,8 @@ const scoreGame = ({
 }) => {
   const weights = {
     distance: 0,
-    genre: 0,
-    platform: 50,
+    genre: 2,
+    platform: 5000000000000000,
     release: 0,
     condition: 0,
     feedback: 1,
