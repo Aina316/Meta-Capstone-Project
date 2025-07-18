@@ -3,6 +3,8 @@ import {
   fetchGamesCatalog,
   fetchAvailableCatalogIds,
 } from "../../../services/catalogService";
+import { logEngagement } from "../../../services/engagementService";
+import { useAuth } from "../../../context/authContext";
 import SearchBox from "../SearchBox/SearchBox";
 import Filter from "../SearchBox/Filter";
 import Game from "./Game";
@@ -21,8 +23,12 @@ const GameList = () => {
   const [selectedPlatform, setSelectedPlatform] = useState("");
   const [selectedAvailability, setSelectedAvailability] = useState("");
   const [availableCatalogIds, setAvailableCatalogIds] = useState([]);
+  const { user } = useAuth();
 
-  const handleGameClick = (game) => {
+  const handleGameClick = async (game) => {
+    if (user && game.id) {
+      await logEngagement(user.id, game.id, "click");
+    }
     setSelectedGame(game);
   };
 

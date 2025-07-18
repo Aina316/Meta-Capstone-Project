@@ -1,6 +1,7 @@
 import Header from "../../components/Header";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/authContext";
+import { fetchCatalogGameById } from "../../services/catalogService";
 import {
   fetchNotificationsForUser,
   markAllNotificationsAsRead,
@@ -37,7 +38,16 @@ const NotificationsPage = () => {
 
     if (notif?.type === "declined") {
       try {
-        const recs = await recommendGamesForUser(user.id);
+        const referenceCatalogId = notif.catalog_id || notif.game_id;
+        let referenceGame = null;
+
+        if (referenceCatalogId) {
+          const { data } = await fetchCatalogGameById(referenceCatalogId);
+          if (data) {
+            referenceGame = { catalog: data };
+          }
+        }
+        const recs = await recommendGamesForUser(user.id, referenceGame);
         if (recs.length > 0) {
           setModalRecommendations(recs);
           setShowRecommendationModal(true);
@@ -70,6 +80,24 @@ const NotificationsPage = () => {
             {notifications.map((n) => (
               <li key={n.id} className={n.read ? "read" : "unread"}>
                 <div className="notification-message">{n.message}</div>
+                {n.type === "declined" && !n.read && (
+                  <button
+                    className="see-similar-btn"
+                    onClick={async () => {
+                      const { data } = await fetchCatalogGameById(n.catalog_id);
+                      const recs = await recommendGamesForUser(
+                        user.id,
+                        10,
+                        { catalog: data },
+                        [n.catalog_id]
+                      );
+                      setModalRecommendations(recs.slice(3));
+                      setShowRecommendationModal(true);
+                    }}
+                  >
+                    Show Me Similar Games
+                  </button>
+                )}
                 <div className="notification-meta">
                   <span>{new Date(n.created_at).toLocaleString()}</span>
                   {!n.read && (

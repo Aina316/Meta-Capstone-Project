@@ -57,7 +57,6 @@ const getUserBorrowPatterns = async (catalogIds) => {
   const topPlatforms = Object.entries(platformCount)
     .sort((a, b) => b[1] - a[1])
     .map(([p]) => p);
-
   return { topGenres, topPlatforms };
 };
 
@@ -107,6 +106,7 @@ const scoreGame = ({
   userLat,
   userLon,
   userGenres,
+  userPlatforms,
   game,
   feedbackMap,
   engagementMap = {},
@@ -117,16 +117,16 @@ const scoreGame = ({
   upvotedReferencePlatform = "",
 }) => {
   const weights = {
-    distance: 0.2,
-    genre: 0.15,
-    platform: 0.1,
-    release: 0.1,
-    condition: 0.05,
-    feedback: 0.1,
-    borrowPattern: 0.1,
-    engagement: 0.1,
-    availability: 0.2,
-    upvoteSimilarity: 0.2,
+    distance: 0,
+    genre: 0,
+    platform: 50,
+    release: 0,
+    condition: 0,
+    feedback: 1,
+    borrowPattern: 2,
+    engagement: 0,
+    availability: 0,
+    upvoteSimilarity: 0,
   };
 
   // Distance Score
@@ -148,7 +148,7 @@ const scoreGame = ({
     return 0;
   })();
 
-  const gameGenres = (game.catalog?.genre || "")
+  const gameGenres = (game.genre || "")
     .split(",")
     .map((g) => g.trim().toLowerCase());
 
@@ -162,13 +162,17 @@ const scoreGame = ({
   })();
 
   const platformScore = (() => {
-    const platform = (game.catalog?.platform || "").toLowerCase();
-    return userGenres.includes(platform) ? 1 : 0;
+    const platform = (game.platform || "").toLowerCase();
+    let res = 0;
+    for (let plat of userPlatforms) {
+      if (platform.includes(plat.toLowerCase())) res += 1;
+    }
+    return res;
   })();
 
   const releaseScore = (() => {
-    if (game.catalog?.release_year) {
-      const age = new Date().getFullYear() - game.catalog.release_year;
+    if (game.release_year) {
+      const age = new Date().getFullYear() - game.release_year;
       return age < 3 ? 1 : age < 6 ? 0.75 : age < 10 ? 0.5 : 0.2;
     }
     return 0.5;
@@ -224,7 +228,6 @@ const scoreGame = ({
     weights.borrowPattern * borrowPatternScore +
     weights.availability * availabilityBoost +
     weights.upvoteSimilarity * upvoteSimilarityScore;
-
   return {
     score: Math.max(0, Math.min(weightedScore, 1)),
     explanation: {
@@ -244,20 +247,23 @@ const scoreGame = ({
 
 export const recommendGamesForUser = async (
   userId,
-  limit = 100,
+  limit = 300,
   referenceGame = null,
   excludeCatalogIds = []
 ) => {
   const profile = await fetchUserProfile(userId);
-  const { latitude, longitude, favorite_genres } = profile;
+  const { latitude, longitude, favorite_genres, favorite_platforms } = profile;
 
-  if (!latitude || !longitude || !favorite_genres) {
+  if (!latitude || !longitude || !favorite_genres || !favorite_platforms) {
     throw new Error("User must have location and favorite genres set");
   }
 
   const userGenres = Array.isArray(favorite_genres)
     ? favorite_genres
     : favorite_genres.split(",").map((g) => g.trim().toLowerCase());
+  const userPlatforms = Array.isArray(favorite_platforms)
+    ? favorite_platforms
+    : favorite_platforms.split(",").map((g) => g.trim().toLowerCase());
 
   const ownedCatalogIds = await fetchUserOwnedGameIds(userId);
   const feedback = await fetchUserFeedback(userId);
@@ -304,6 +310,7 @@ export const recommendGamesForUser = async (
       userLat: latitude,
       userLon: longitude,
       userGenres,
+      userPlatforms,
       topPlatforms: borrowedPlatforms,
       borrowedGenres,
       borrowedPlatforms,
