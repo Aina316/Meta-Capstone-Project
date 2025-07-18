@@ -148,7 +148,7 @@ export const updateDenialStatus = async (
 
   await createNotification({
     userId: borrowerId,
-    message: `Your borrow request for "${gameTitle}" was declined.`,
+    message: `Your Request for ${gameTitle} got declined. However, we can recommend you games similar to ${gameTitle}. Do you want to see?`,
     type: "declined",
   });
 

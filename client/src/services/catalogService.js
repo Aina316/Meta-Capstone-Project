@@ -55,3 +55,24 @@ export const fetchAvailableCatalogIds = async () => {
 
   return [...new Set(data.map((item) => item.catalog_id))];
 };
+
+export const fetchAllCatalogGames = async () => {
+  const { data, error } = await supabase.from("catalog").select("*");
+  if (error) {
+    return [];
+  }
+  return data;
+};
+
+export const fetchCatalogIdsWithAvailableCopies = async () => {
+  const { data, error } = await supabase
+    .from("games")
+    .select("catalog_id")
+    .eq("available", true);
+
+  if (error) {
+    return [];
+  }
+  const ids = data.map((row) => row.catalog_id);
+  return Array.from(new Set(ids));
+};

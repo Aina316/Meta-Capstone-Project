@@ -99,3 +99,21 @@ export async function fetchUserOwnedGameIds(userId) {
   const ids = data.map((g) => g.catalog_id);
   return [...new Set(ids)];
 }
+
+export async function fetchBorrowHistoryCatalogs(userId) {
+  const { data: requests, error } = await supabase
+    .from("requests")
+    .select(
+      `
+      game_id,
+      game:games(id, catalog_id)
+    `
+    )
+    .eq("borrower_id", userId)
+    .eq("status", "Accepted");
+
+  if (error) throw error;
+
+  const catalogIds = requests.map((r) => r.game?.catalog_id).filter(Boolean);
+  return [...new Set(catalogIds)];
+}
