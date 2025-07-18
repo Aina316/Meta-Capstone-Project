@@ -1,16 +1,16 @@
 import { supabase } from "./supabaseClient";
 
 // Store user feedback in table
-export async function submitFeedback(userId, gameId, feedback) {
+export async function submitFeedback(userId, catalogId, feedback) {
   const { data, error } = await supabase.from("recommendation_feedback").upsert(
     [
       {
         user_id: userId,
-        game_id: gameId,
+        catalog_id: catalogId,
         feedback, // "up" or "down"
       },
     ],
-    { onConflict: ["user_id", "game_id"] }
+    { onConflict: ["user_id", "catlog_id"] }
   );
 
   return { data, error };
@@ -19,7 +19,7 @@ export async function submitFeedback(userId, gameId, feedback) {
 export async function fetchUserFeedback(userId) {
   const { data, error } = await supabase
     .from("recommendation_feedback")
-    .select("game_id, feedback")
+    .select("catalog_id, feedback")
     .eq("user_id", userId);
   if (error) {
     return [];
@@ -27,17 +27,10 @@ export async function fetchUserFeedback(userId) {
   return data;
 }
 
-export async function saveRecommendationFeedback(userId, gameId, feedback) {
-  const { error } = await supabase.from("recommendation_feedback").upsert(
-    [
-      {
-        user_id: userId,
-        game_id: gameId,
-        feedback,
-      },
-    ],
-    { onConflict: ["user_id", "game_id"] }
-  );
-
-  if (error) throw error;
+export async function saveRecommendationFeedback(userId, catalogId, feedback) {
+  const { error } = await supabase.from("recommendation_feedback").insert({
+    user_id: userId,
+    catalog_id: catalogId,
+    feedback,
+  });
 }
