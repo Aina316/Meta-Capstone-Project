@@ -3,33 +3,38 @@ import GameList from "../Game/GameList";
 import "./HomePage.css";
 import Header from "../../../components/Header";
 import RequestBoard from "../Request/RequestBoard";
+import GameDetails from "../../../components/GameDetails";
 import { useAuth } from "../../../context/authContext";
 import { recommendGamesForUser } from "../../../services/recommendationService";
 import { saveRecommendationFeedback } from "../../../services/feedbackService";
+import { logEngagement } from "../../../services/engagementService";
 
 const HomePage = () => {
   const { user } = useAuth();
+  const [allRecommendations, setAllRecommendations] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [loadingRecs, setLoadingRecs] = useState(true);
   const [recError, setRecError] = useState("");
   const [feedbackStatus, setFeedbackStatus] = useState({});
+  const [selectedGame, setSelectedGame] = useState(null);
+
+  const loadRecommendations = async (referenceGame = null) => {
+    if (!user) {
+      setLoadingRecs(false);
+      return;
+    }
+    try {
+      const recs = await recommendGamesForUser(user.id, 50);
+      setAllRecommendations(recs);
+      setRecommendations(recs.slice(0, 3));
+    } catch (err) {
+      setRecError("Failed to load recommendations.");
+    } finally {
+      setLoadingRecs(false);
+    }
+  };
 
   useEffect(() => {
-    const loadRecommendations = async () => {
-      if (!user) {
-        setLoadingRecs(false);
-        return;
-      }
-      try {
-        const recs = await recommendGamesForUser(user.id);
-        setRecommendations(recs.slice(0, 3));
-      } catch (err) {
-        setRecError("Failed to load recommendations.");
-      } finally {
-        setLoadingRecs(false);
-      }
-    };
-
     loadRecommendations();
   }, [user]);
 
@@ -37,6 +42,12 @@ const HomePage = () => {
     try {
       await saveRecommendationFeedback(user.id, gameId, feedback);
       setFeedbackStatus((prev) => ({ ...prev, [gameId]: feedback }));
+
+      // Remove the game that was just rated
+      const updated = allRecommendations.filter((g) => g.id !== gameId);
+
+      setAllRecommendations(updated);
+      setRecommendations(updated.slice(0, 3));
     } catch (err) {
       alert("Failed to save feedback.");
     }
@@ -59,7 +70,14 @@ const HomePage = () => {
             {!loadingRecs && recommendations.length > 0 && (
               <div className="recommendations-grid">
                 {recommendations.map((game) => (
-                  <div key={game.id} className="recommendation-card">
+                  <div
+                    key={game.id}
+                    className="recommendation-card"
+                    onClick={async () => {
+                      await logEngagement(user.id, game.id, "click");
+                      setSelectedGame(game);
+                    }}
+                  >
                     <div className="recommendation-content">
                       {game.catalog?.cover_image && (
                         <img
@@ -78,7 +96,10 @@ const HomePage = () => {
                     </div>
                     <div className="feedback-buttons">
                       <button
-                        onClick={() => handleFeedback(game.id, "up")}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await handleFeedback(game.id, "up", game);
+                        }}
                         disabled={feedbackStatus[game.id] === "up"}
                         className={
                           feedbackStatus[game.id] === "up" ? "thumb-active" : ""
@@ -86,8 +107,12 @@ const HomePage = () => {
                       >
                         👍
                       </button>
+
                       <button
-                        onClick={() => handleFeedback(game.id, "down")}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await handleFeedback(game.id, "down");
+                        }}
                         disabled={feedbackStatus[game.id] === "down"}
                         className={
                           feedbackStatus[game.id] === "down"
@@ -100,6 +125,12 @@ const HomePage = () => {
                     </div>
                   </div>
                 ))}
+                {selectedGame && (
+                  <GameDetails
+                    catalogGame={selectedGame.catalog}
+                    onClose={() => setSelectedGame(null)}
+                  />
+                )}
               </div>
             )}
           </section>
