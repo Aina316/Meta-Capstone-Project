@@ -261,11 +261,6 @@ export const recommendGamesForUser = async (
 
   const ownedCatalogIds = await fetchUserOwnedGameIds(userId);
   const feedback = await fetchUserFeedback(userId);
-  const lastUpvotedCatalogId = feedback
-    .filter((f) => f.feedback === "up")
-    .sort(
-      (a, b) => new Date(b.created_at) - new Date(a.created_at)
-    )?.[0]?.catalog_id;
 
   let upvotedReferenceGenres = [];
   let upvotedReferencePlatform = "";
