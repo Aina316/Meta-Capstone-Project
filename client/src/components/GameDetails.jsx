@@ -4,6 +4,7 @@ import image from "../assets/images/default_avatar.jpg";
 import { createBorrowRequest, makeGameUnavailable } from "../services/requests";
 import { fetchAvailableCopiesByCatalogId } from "../services/gameService";
 import BorrowRequestDateModal from "./BorrowRequestDateModal";
+import { logEngagement } from "../services/engagementService";
 import "../App.css";
 
 const GameDetails = ({ catalogGame, onClose }) => {
@@ -38,6 +39,15 @@ const GameDetails = ({ catalogGame, onClose }) => {
   const handleConfirmRequest = async (startDate, returnDate) => {
     if (!user || !selectedOwner) return;
 
+    const borrowerScore = user?.borrower_score ?? 0;
+    if (borrowerScore < 5) {
+      alert("Your borrower score is too low to make a request at this time.");
+      onClose();
+      return;
+    }
+
+    await logEngagement(user.id, selectedOwner.catalog_id, "borrow");
+
     const { error } = await createBorrowRequest({
       lenderId: selectedOwner.owner.id,
       gameId: selectedOwner.id,
@@ -62,7 +72,6 @@ const GameDetails = ({ catalogGame, onClose }) => {
 
     setSelectedOwner(null);
   };
-
   return (
     <div className="game-details-modal-overlay">
       <div className="game-details-modal-content">
