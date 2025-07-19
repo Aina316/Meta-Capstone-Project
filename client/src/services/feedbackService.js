@@ -1,5 +1,5 @@
 import { supabase } from "./supabaseClient";
-
+import { fetchCatalogGameById } from "./catalogService";
 // Store user feedback in table
 export async function submitFeedback(userId, catalogId, feedback) {
   const { data, error } = await supabase.from("recommendation_feedback").upsert(
@@ -33,4 +33,25 @@ export async function saveRecommendationFeedback(userId, catalogId, feedback) {
     catalog_id: catalogId,
     feedback,
   });
+}
+
+export async function fetchLikedGames(userId) {
+  const { data, error } = await supabase
+    .from("recommendation_feedback")
+    .select("catalog_id")
+    .eq("user_id", userId)
+    .eq("feedback", "up");
+
+  if (error) {
+    console.error("Error fetching liked games:", error.message);
+    return [];
+  }
+
+  const uniqueIds = [...new Set(data.map((row) => row.catalog_id))];
+
+  const gameFetches = await Promise.all(
+    uniqueIds.map((id) => fetchCatalogGameById(id))
+  );
+
+  return gameFetches.map((res) => res.data).filter(Boolean);
 }
