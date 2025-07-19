@@ -7,6 +7,7 @@ import NewUserPage from "./pages/new-user-page/NewUserPage";
 import HomePage from "./pages/home-page/HomePage/HomePage";
 import ProfilePage from "./pages/profile-page/ProfilePage";
 import GameLibrary from "./pages/game-library-page/GameLibrary";
+import LikedGames from "./pages/liked-games-page/LikedGames";
 import UserProfilePage from "./pages/profile-page/UserProfilePage";
 import UserGameLibrary from "./pages/game-library-page/UserGameLibrary";
 import NotificationsPage from "./pages/notifications-page/NotificationsPage";
@@ -59,7 +60,14 @@ function App() {
           </PrivateRoute>
         }
       />
-
+      <Route
+        path="/liked-games"
+        element={
+          <PrivateRoute>
+            <LikedGames />
+          </PrivateRoute>
+        }
+      />
       <Route
         path="/profile/:userId"
         element={
