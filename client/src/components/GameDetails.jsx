@@ -40,8 +40,11 @@ const GameDetails = ({ catalogGame, onClose }) => {
     if (!user || !selectedOwner) return;
 
     const borrowerScore = user?.borrower_score ?? 0;
-    if (borrowerScore < 5) {
-      alert("Your borrower score is too low to make a request at this time.");
+    const lenderMinScore = selectedOwner.owner?.min_borrower_score ?? 5;
+    if (borrowerScore < lenderMinScore) {
+      alert(
+        `Borrow request denied. This lender requires a minimum borrower score of ${lenderMinScore}. Your score is ${borrowerScore}.`
+      );
       onClose();
       return;
     }
