@@ -39,6 +39,7 @@ export async function updateUserProfile({
   previousUser,
   favorite_genres,
   favorite_platforms,
+  min_borrower_score,
 }) {
   const {
     data: { user },
@@ -53,6 +54,8 @@ export async function updateUserProfile({
   if (latitude !== undefined) updates.latitude = latitude;
   if (longitude !== undefined) updates.longitude = longitude;
   if (previousUser !== undefined) updates.previousUser = previousUser;
+  if (min_borrower_score !== undefined)
+    updates.min_borrower_score = min_borrower_score;
   if (favorite_genres !== undefined) updates.favorite_genres = favorite_genres;
   if (favorite_platforms !== undefined)
     updates.favorite_platforms = favorite_platforms;
