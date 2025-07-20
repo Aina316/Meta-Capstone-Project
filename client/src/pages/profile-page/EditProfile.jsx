@@ -23,6 +23,9 @@ const EditProfile = ({ profile, onClose, onUpdatedProfile }) => {
 
   const [allGenres, setAllGenres] = useState([]);
   const [allPlatforms, setAllPlatforms] = useState([]);
+  const [minBorrowerScore, setMinBorrowerScore] = useState(
+    profile?.min_borrower_score ?? 5
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,6 +54,7 @@ const EditProfile = ({ profile, onClose, onUpdatedProfile }) => {
       location,
       favorite_genres: favoriteGenres,
       favorite_platforms: favoritePlatforms,
+      min_borrower_score: minBorrowerScore,
     });
     setSaving(false);
 
@@ -94,7 +98,15 @@ const EditProfile = ({ profile, onClose, onUpdatedProfile }) => {
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Your New City or Region"
         />
-
+        <h4>Minimum Borrower Score Required: </h4>
+        <input
+          type="number"
+          min="0"
+          max="10"
+          step="1"
+          value={minBorrowerScore}
+          onChange={(e) => setMinBorrowerScore(parseFloat(e.target.value))}
+        />
         <h4>Favorite Genres (Select 5):</h4>
         <div className="multi-select-grid">
           {allGenres.map((genre) => (
