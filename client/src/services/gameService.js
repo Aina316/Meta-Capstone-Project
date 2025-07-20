@@ -48,7 +48,9 @@ export const fetchAvailableCopiesByCatalogId = async (catalogId) => {
         id,
         username,
         image,
-        borrower_score
+        borrower_score,
+        lender_score,
+        min_borrower_score
       )
     `
     )
