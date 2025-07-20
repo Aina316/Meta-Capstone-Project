@@ -33,6 +33,9 @@ export async function saveRecommendationFeedback(userId, catalogId, feedback) {
     catalog_id: catalogId,
     feedback,
   });
+  if (error) {
+    throw error;
+  }
 }
 
 export async function fetchLikedGames(userId) {
@@ -43,7 +46,6 @@ export async function fetchLikedGames(userId) {
     .eq("feedback", "up");
 
   if (error) {
-    console.error("Error fetching liked games:", error.message);
     return [];
   }
 
