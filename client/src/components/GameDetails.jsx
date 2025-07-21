@@ -45,9 +45,6 @@ const GameDetails = ({ catalogGame, onClose }) => {
     const borrowerProfile = await getUserProfile();
     const borrowerScore = borrowerProfile?.borrower_score ?? 0;
     const lenderMinScore = selectedOwner.owner?.min_borrower_score ?? 5;
-    console.log(borrowerProfile);
-    console.log(borrowerScore);
-    console.log(lenderMinScore);
     if (borrowerScore < lenderMinScore) {
       setPopupMessage("Your borrower score is too low for this request.");
       return;
