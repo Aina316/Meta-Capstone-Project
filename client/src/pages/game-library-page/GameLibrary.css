@@ -67,6 +67,79 @@
   transform: translateY(-2px);
 }
 
+.delete-game-btn {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: #f44336;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.delete-game-btn:hover {
+  background-color: #d32f2f;
+}
+
+.game-library-page-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.game-library-page-modal-content {
+  background: #ffffff;
+  padding: 24px;
+  width: 420px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+  text-align: center;
+}
+
+.game-library-page-modal-content h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.search-bar {
+  width: 80%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+.game-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+
 .cover-image {
   width: 80px;
   height: 80px;
@@ -90,20 +163,4 @@
   margin: 2px 0;
   font-size: 0.9rem;
   color: #555;
-}
-
-.delete-game-btn {
-  margin-top: 12px;
-  padding: 8px 12px;
-  background-color: #f44336;
-  color: #ffffff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.3s ease;
-}
-
-.delete-game-btn:hover {
-  background-color: #d32f2f;
 }

@@ -4,6 +4,9 @@ import image from "../assets/images/default_avatar.jpg";
 import { createBorrowRequest, makeGameUnavailable } from "../services/requests";
 import { fetchAvailableCopiesByCatalogId } from "../services/gameService";
 import BorrowRequestDateModal from "./BorrowRequestDateModal";
+import { getUserProfile } from "../services/profileService";
+import PopupMessage from "./PopupMessage";
+import { toast } from "react-toastify";
 import { logEngagement } from "../services/engagementService";
 import "../App.css";
 
@@ -12,6 +15,7 @@ const GameDetails = ({ catalogGame, onClose }) => {
   const [owners, setOwners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOwner, setSelectedOwner] = useState(null);
+  const [popupMessage, setPopupMessage] = useState("");
 
   if (!catalogGame) return null;
 
@@ -38,14 +42,14 @@ const GameDetails = ({ catalogGame, onClose }) => {
 
   const handleConfirmRequest = async (startDate, returnDate) => {
     if (!user || !selectedOwner) return;
-
-    const borrowerScore = user?.borrower_score ?? 0;
+    const borrowerProfile = await getUserProfile();
+    const borrowerScore = borrowerProfile?.borrower_score ?? 0;
     const lenderMinScore = selectedOwner.owner?.min_borrower_score ?? 5;
+    console.log(borrowerProfile);
+    console.log(borrowerScore);
+    console.log(lenderMinScore);
     if (borrowerScore < lenderMinScore) {
-      alert(
-        `Borrow request denied. This lender requires a minimum borrower score of ${lenderMinScore}. Your score is ${borrowerScore}.`
-      );
-      onClose();
+      setPopupMessage("Your borrower score is too low for this request.");
       return;
     }
 
@@ -69,7 +73,7 @@ const GameDetails = ({ catalogGame, onClose }) => {
         alert("Failed to update game availability.");
         return;
       }
-      alert("Borrow request sent!");
+      toast.success("Borrow Request Sent!");
       onClose();
     }
 
@@ -134,6 +138,12 @@ const GameDetails = ({ catalogGame, onClose }) => {
         <BorrowRequestDateModal
           onClose={() => setSelectedOwner(null)}
           onSubmit={handleConfirmRequest}
+        />
+      )}
+      {popupMessage && (
+        <PopupMessage
+          message={popupMessage}
+          onClose={() => setPopupMessage("")}
         />
       )}
     </div>

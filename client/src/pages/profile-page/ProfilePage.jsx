@@ -44,7 +44,7 @@ const ProfilePage = () => {
         <h2>My Profile</h2>
         <img src={profile.image || image} alt="Avatar" />
         <h3>{profile?.username}</h3>
-        <p className="profile-bio">{profile?.bio}</p>
+        <p className="profile-bio">Bio: {profile?.bio}</p>
         <p className="profile-location">Location: {profile?.location}</p>
 
         {profile.favorite_genres && profile.favorite_genres.length > 0 && (
@@ -71,9 +71,6 @@ const ProfilePage = () => {
           </p>
           <p>
             <strong>Borrower Score:</strong> {profile.borrower_score}
-          </p>
-          <p>
-            <strong>Reputation:</strong> ⭐ {profile.reputation?.toFixed(1)}
           </p>
         </div>
         <button onClick={() => setOpenEdit(true)}>Edit Profile</button>
