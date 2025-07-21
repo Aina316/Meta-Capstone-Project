@@ -13,7 +13,7 @@ async function main() {
   // Get all requests with a return date within next 48 hours
   const { data: requests, error } = await supabase
     .from("requests")
-    .select("id, borrower_id, return_date, game_id")
+    .select("id, borrower_id, return_date, game_id, game: title(title)")
     .eq("status", "Accepted")
     .lt("return_date", in48Hours.toISOString())
     .gt("return_date", now.toISOString());
@@ -28,7 +28,7 @@ async function main() {
   }
 
   for (const req of requests) {
-    const message = `Reminder: Your borrowed game is due by ${req.return_date}.`;
+    const message = `Reminder: Your borrowed game "${req.game?.title}" is due by ${req.return_date}.`;
 
     // Insert deadline notification into notifications table
     const { error: notifError } = await supabase.from("notifications").insert([
