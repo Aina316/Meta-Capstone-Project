@@ -19,7 +19,7 @@ async function main() {
     .gt("return_date", now.toISOString());
 
   if (error) {
-    alert("Error querying requests:", error);
+    console.error("Error querying requests:", error);
     return;
   }
 
@@ -42,7 +42,9 @@ async function main() {
     ]);
 
     if (notifError) {
-      alert(`Error inserting notification for user ${req.borrower_id}:`);
+      console.error(
+        `Error inserting notification for user ${req.borrower_id}:`
+      );
     }
   }
 }
