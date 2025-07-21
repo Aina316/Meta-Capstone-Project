@@ -13,7 +13,7 @@ async function main() {
   // Get all requests with a return date within next 48 hours
   const { data: requests, error } = await supabase
     .from("requests")
-    .select("id, borrower_id, return_date, game_id, game:title(title)")
+    .select("id, borrower_id, return_date,game:game_id(title)")
     .eq("status", "Accepted")
     .lt("return_date", in48Hours.toISOString())
     .gt("return_date", now.toISOString());
