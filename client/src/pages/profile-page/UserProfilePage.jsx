@@ -74,9 +74,6 @@ const UserProfilePage = () => {
           <p>
             <strong>Borrower Score:</strong> {profile.borrower_score}
           </p>
-          <p>
-            <strong>Reputation:</strong> ⭐ {profile.reputation?.toFixed(1)}
-          </p>
         </div>
       </div>
     </div>

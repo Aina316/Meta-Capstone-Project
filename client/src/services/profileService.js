@@ -9,9 +9,7 @@ export async function getUserProfile() {
 
   const { data, error } = await supabase
     .from("profiles")
-    .select(
-      "username, bio, image, location, favorite_genres, favorite_platforms"
-    )
+    .select("*")
     .eq("id", user.id)
     .single();
 

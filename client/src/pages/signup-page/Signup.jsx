@@ -4,6 +4,7 @@ import { supabase } from "/src/services/supabaseClient";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "./Signup.css";
+import PopupMessage from "../../components/PopupMessage";
 import { signUp } from "../../services/authentication";
 
 const Signup = () => {
@@ -11,6 +12,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [visible, setVisible] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
 
   const togglePasswordVisibility = () => {
     setVisible(!visible);
@@ -18,7 +20,7 @@ const Signup = () => {
 
   const handleSignup = async () => {
     if (!email || !password || !username) {
-      alert("Please fill in all fields");
+      setPopupMessage("Please fill in all fields");
       return;
     }
 
@@ -48,7 +50,9 @@ const Signup = () => {
       }
     }
 
-    alert("Signup successful! Check your email to confirm your account.");
+    setPopupMessage(
+      "Signup successful! Check your email to confirm your account."
+    );
     navigate("/login");
   };
 
@@ -102,6 +106,12 @@ const Signup = () => {
           </p>
         </div>
       </main>
+      {popupMessage && (
+        <PopupMessage
+          message={popupMessage}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
     </div>
   );
 };
