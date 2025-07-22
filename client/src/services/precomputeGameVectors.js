@@ -1,4 +1,4 @@
-import { supabase } from "./supabaseClient.js";
+import { supabase } from "./supabaseNodeClient";
 const buildGameVector = (field) => {
   const counts = {};
   const items = field?.split(",").map((i) => i.trim().toLowerCase()) || [];
