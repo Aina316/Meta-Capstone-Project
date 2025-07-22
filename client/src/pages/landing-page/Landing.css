@@ -1,48 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
 html,
 body {
   margin: 0;
   padding: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  height: 100%;
+}
+
+.landing-page {
+  height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
-
-.landing-page-component {
+.overlay {
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 100%;
-  justify-content: space-between;
 }
-.landingpage-header-component {
-  background-color: purple;
-  flex-direction: row;
-  justify-content: center;
-  height: 100px;
-  width: 100%;
-}
-.landingpage-header-component header {
-  width: 100%;
+.landing-header {
+  background-color: #00239b;
+  padding: 20px;
   display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.landing-page-component .login-signup-btns {
-  margin-top: 20px;
-  margin-right: 10px;
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+}
+
+.auth-buttons {
   display: flex;
   gap: 10px;
 }
 
-.login-signup-btns button {
-  justify-items: right;
+.auth-buttons .btn {
+  padding: 10px 20px;
   background-color: white;
-  color: black;
-  height: 50px;
-  width: 80px;
-  border-radius: 100px;
-}
-.login-signup-btns button:hover {
+  color: #00239b;
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
   cursor: pointer;
-  transform: scale(1.1);
+  transition: all 0.3s ease;
+}
+
+.auth-buttons .btn:hover {
+  background-color: #e5e8f9;
+}
+
+.hero {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #00239b;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin-bottom: 30px;
 }

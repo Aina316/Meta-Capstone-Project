@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "../App.css";
 
-const NominatimURL = "https://nominatim.openstreetmap.org/search";
+const nominatimURL = "https://nominatim.openstreetmap.org/search";
 
 const LocationAutocomplete = ({ value, onChange }) => {
   const [query, setQuery] = useState(value?.short_label || "");
@@ -24,7 +24,7 @@ const LocationAutocomplete = ({ value, onChange }) => {
         limit: 5,
       });
 
-      const res = await fetch(`${NominatimURL}?${params.toString()}`);
+      const res = await fetch(`${nominatimURL}?${params.toString()}`);
       const data = await res.json();
 
       setSuggestions(
