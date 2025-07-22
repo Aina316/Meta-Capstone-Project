@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #0063b7;
+  background-color: #00239b;
 }
 
 .signup-component {
@@ -60,7 +60,7 @@
   font-size: 18px;
 }
 .signup-btn {
-  background-color: purple;
+  background-color: #00239b;
   color: white;
   width: 100%;
   padding: 12px;
@@ -82,7 +82,7 @@
 }
 
 .signup-component-content a {
-  color: purple;
+  color: #00239b;
   text-decoration: none;
 }
 

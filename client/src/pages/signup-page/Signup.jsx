@@ -30,7 +30,6 @@ const Signup = () => {
     );
 
     if (signupError) {
-      alert(signupError.message);
       return;
     }
 
@@ -45,7 +44,6 @@ const Signup = () => {
       ]);
 
       if (profileError) {
-        alert(profileError.message);
         return;
       }
     }
