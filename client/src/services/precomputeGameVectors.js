@@ -30,8 +30,6 @@ const main = async () => {
 
   if (insertError)
     throw new Error("Failed to insert vectors: " + insertError.message);
-
-  console.log("Game vectors precomputed and stored.");
 };
 
 main();
