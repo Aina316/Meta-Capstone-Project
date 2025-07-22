@@ -1,0 +1,19 @@
+name: Populate User Vectors
+
+on:
+  schedule:
+    - cron: "*/5 * * * *" # Every 5 mins
+  workflow_dispatch:
+
+jobs:
+  run-query:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Run SQL against Supabase
+        run: psql "${{ secrets.SUPABASE_DB_URL }}" -f supabase/sql/populate_user_vectors.sql
