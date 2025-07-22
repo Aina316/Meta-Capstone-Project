@@ -19,7 +19,6 @@ async function main() {
     .gt("return_date", now.toISOString());
 
   if (error) {
-    console.error("Error querying requests:", error);
     return;
   }
 
@@ -28,6 +27,19 @@ async function main() {
   }
 
   for (const req of requests) {
+    const { data: existing, error: checkError } = await supabase
+      .from("notifications")
+      .select("id")
+      .eq("request_id", req.id)
+      .eq("type", "deadline")
+      .maybeSingle();
+
+    if (checkError) {
+      continue;
+    }
+    if (existing) {
+      continue;
+    }
     const message = `Reminder: Your borrowed game "${req.game?.title}" is due by ${req.return_date}.`;
 
     // Insert deadline notification into notifications table
@@ -42,9 +54,7 @@ async function main() {
     ]);
 
     if (notifError) {
-      console.error(
-        `Error inserting notification for user ${req.borrower_id}:`
-      );
+      return;
     }
   }
 }

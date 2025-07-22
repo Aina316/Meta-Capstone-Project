@@ -10,6 +10,11 @@ import {
   fetchCatalogIdsWithAvailableCopies,
 } from "./catalogService";
 import { fetchUserFeedback } from "./feedbackService";
+import {
+  getUserVector,
+  buildGameVector,
+  cosineSimilarity,
+} from "./userVectorService";
 
 //Caluclate Distance using the Haversine Formula
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -22,6 +27,32 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
     Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
+};
+
+export const getAdaptiveWeights = ({
+  totalBorrows = 0,
+  totalClicks = 0,
+  totalUpvotes = 0,
+  totalDownvotes = 0,
+}) => {
+  const totalEngagement = totalBorrows + totalClicks + 1;
+  const clickInfluence = totalClicks / totalEngagement;
+  const borrowInfluence = totalBorrows / totalEngagement;
+  const feedbackScore =
+    (totalUpvotes - totalDownvotes) / (totalUpvotes + totalDownvotes + 1);
+
+  return {
+    distance: 0,
+    genre: 200 + 100 * borrowInfluence,
+    platform: 300 + 100 * clickInfluence,
+    release: 0,
+    condition: 0,
+    feedback: 1 + 1 * feedbackScore,
+    engagement: 0.5 + 1 * borrowInfluence,
+    borrowPattern: 1 + 2 * borrowInfluence,
+    availability: 1 + 0.5 * clickInfluence,
+    upvoteSimilarity: 1 + 0.25 * feedbackScore,
+  };
 };
 
 const getDecayMultiplier = (timestamp) => {
@@ -38,7 +69,6 @@ const getUserBorrowPatterns = async (catalogIds) => {
   for (const id of catalogIds) {
     const { data } = await fetchCatalogGameById(id);
     if (!data) continue;
-
     (data.genre || "")
       .split(",")
       .map((g) => g.trim().toLowerCase())
@@ -96,7 +126,6 @@ const logRecommendationEvents = async (userId, games) => {
   }));
 
   const { error } = await supabase.from("recommendation_events").insert(events);
-
   if (error) {
     alert("Failed to log recommendation events: " + error.message);
   }
@@ -105,8 +134,6 @@ const logRecommendationEvents = async (userId, games) => {
 const scoreGame = ({
   userLat,
   userLon,
-  userGenres,
-  userPlatforms,
   game,
   feedbackMap,
   engagementMap = {},
@@ -115,21 +142,10 @@ const scoreGame = ({
   isAvailable = false,
   upvotedReferenceGenres = [],
   upvotedReferencePlatform = "",
+  genreScore = 0,
+  platformScore = 0,
+  weights,
 }) => {
-  const weights = {
-    distance: 0,
-    genre: 200,
-    platform: 500,
-    release: 0,
-    condition: 0,
-    feedback: 1,
-    borrowPattern: 2,
-    engagement: 0,
-    availability: 0,
-    upvoteSimilarity: 0,
-  };
-
-  // Distance Score
   const distanceScore = (() => {
     if (
       game.owner?.latitude != null &&
@@ -152,24 +168,6 @@ const scoreGame = ({
     .split(",")
     .map((g) => g.trim().toLowerCase());
 
-  const genreScore = (() => {
-    let score = 0;
-    userGenres.forEach((g, index) => {
-      const weight = (5 - index) / 5;
-      if (gameGenres.includes(g.toLowerCase())) score += weight;
-    });
-    return Math.min(score / userGenres.length, 1);
-  })();
-
-  const platformScore = (() => {
-    const platform = (game.platform || "").toLowerCase();
-    let res = 0;
-    for (let plat of userPlatforms) {
-      if (platform.includes(plat.toLowerCase())) res += 1;
-    }
-    return res;
-  })();
-
   const releaseScore = (() => {
     if (game.release_year) {
       const age = new Date().getFullYear() - game.release_year;
@@ -191,7 +189,6 @@ const scoreGame = ({
       : 0;
 
   const engagementBoost = engagementMap[game.id] || 0;
-
   const availabilityBoost = isAvailable ? 1 : 0;
 
   const borrowPatternScore = (() => {
@@ -228,6 +225,7 @@ const scoreGame = ({
     weights.borrowPattern * borrowPatternScore +
     weights.availability * availabilityBoost +
     weights.upvoteSimilarity * upvoteSimilarityScore;
+
   return {
     score: Math.max(0, Math.min(weightedScore, 1)),
     explanation: {
@@ -252,6 +250,9 @@ export const recommendGamesForUser = async (
   excludeCatalogIds = []
 ) => {
   const profile = await fetchUserProfile(userId);
+  const { genreVector: userGenreVector, platformVector: userPlatformVector } =
+    await getUserVector(userId);
+
   const { latitude, longitude, favorite_genres, favorite_platforms } = profile;
 
   if (!latitude || !longitude || !favorite_genres || !favorite_platforms) {
@@ -267,6 +268,13 @@ export const recommendGamesForUser = async (
 
   const ownedCatalogIds = await fetchUserOwnedGameIds(userId);
   const feedback = await fetchUserFeedback(userId);
+  const feedbackMap = {};
+  feedback.forEach((f) => {
+    feedbackMap[f.catalog_id || f.game_id] = f.feedback;
+  });
+
+  const totalUpvotes = feedback.filter((f) => f.feedback === "up").length;
+  const totalDownvotes = feedback.filter((f) => f.feedback === "down").length;
 
   let upvotedReferenceGenres = [];
   let upvotedReferencePlatform = "";
@@ -278,10 +286,7 @@ export const recommendGamesForUser = async (
       referenceGame.catalog.platform || ""
     ).toLowerCase();
   }
-  const feedbackMap = {};
-  feedback.forEach((f) => {
-    feedbackMap[f.catalog_id || f.game_id] = f.feedback;
-  });
+
   const downvotedCatalogIds = Object.keys(feedbackMap).filter(
     (id) => feedbackMap[id] === "down"
   );
@@ -290,6 +295,20 @@ export const recommendGamesForUser = async (
     await getUserBorrowPatterns(borrowedCatalogIds);
 
   const engagementMap = await fetchEngagementScores(userId);
+  let totalClicks = 0;
+  let totalBorrows = 0;
+
+  Object.values(engagementMap).forEach((score) => {
+    totalClicks += score / 3;
+  });
+
+  const adaptiveWeights = getAdaptiveWeights({
+    totalBorrows,
+    totalClicks,
+    totalUpvotes,
+    totalDownvotes,
+  });
+
   const availableCatalogIds = await fetchCatalogIdsWithAvailableCopies();
   const games = await fetchAllCatalogGames();
   const filtered = games.filter(
@@ -298,6 +317,7 @@ export const recommendGamesForUser = async (
       !downvotedCatalogIds.includes(g.id) &&
       !excludeCatalogIds.includes(g.id)
   );
+
   const scored = filtered.map((game) => {
     const dummyGame = {
       id: game.id,
@@ -305,7 +325,17 @@ export const recommendGamesForUser = async (
       owner: null,
       condition: null,
     };
+
     const isAvailable = availableCatalogIds.includes(game.id);
+    const gameGenreVector = buildGameVector(game.genre);
+    const gamePlatformVector = buildGameVector(game.platform);
+
+    const genreScore = cosineSimilarity(userGenreVector, gameGenreVector);
+    const platformScore = cosineSimilarity(
+      userPlatformVector,
+      gamePlatformVector
+    );
+
     const result = scoreGame({
       userLat: latitude,
       userLon: longitude,
@@ -320,6 +350,9 @@ export const recommendGamesForUser = async (
       isAvailable,
       upvotedReferenceGenres,
       upvotedReferencePlatform,
+      genreScore,
+      platformScore,
+      weights: adaptiveWeights,
     });
 
     return {

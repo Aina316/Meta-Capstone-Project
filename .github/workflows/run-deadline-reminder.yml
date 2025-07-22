@@ -2,7 +2,7 @@ name: Deadline Reminder
 
 on:
   schedule:
-    - cron: "0 */6 * * *" # Runs every 6 hours
+    - cron: "0 */1 * * *" # Runs every hour
   workflow_dispatch: # Allows manual triggering from GitHub UI
 
 jobs:
