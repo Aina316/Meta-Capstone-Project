@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient";
+import { buildUserVector } from "./userVectorService";
 
 export async function logEngagement(userId, catalogId, action) {
   if (!["click", "borrow"].includes(action)) {
@@ -37,6 +38,9 @@ export async function logEngagement(userId, catalogId, action) {
 
     if (updateError) {
       alert("Failed to update engagement: " + updateError.message);
+    }
+    if (action === "borrow") {
+      await buildUserVector(userId); // When game is borrowed rebuild user's vector to reflect new preference
     }
   } else {
     const insertData = {

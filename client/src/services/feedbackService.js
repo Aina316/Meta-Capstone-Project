@@ -1,5 +1,6 @@
 import { supabase } from "./supabaseClient";
 import { fetchCatalogGameById } from "./catalogService";
+import { buildUserVector } from "./userVectorService";
 // Store user feedback in table
 export async function submitFeedback(userId, catalogId, feedback) {
   const { data, error } = await supabase.from("recommendation_feedback").upsert(
@@ -12,6 +13,9 @@ export async function submitFeedback(userId, catalogId, feedback) {
     ],
     { onConflict: ["user_id", "catlog_id"] }
   );
+  if (!error && (feedback === "up" || feedback === "down")) {
+    await buildUserVector(userId); //rebuilds user vector when user makes feedback to adjust future recommendations
+  }
 
   return { data, error };
 }
