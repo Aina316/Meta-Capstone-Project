@@ -53,15 +53,29 @@ export async function buildUserVector(userId) {
   ]);
 }
 
-export async function getUserVector(userId) {
+export const getUserVector = async (userId) => {
   const { data, error } = await supabase
     .from("user_vectors")
     .select("genre_vector, platform_vector")
     .eq("user_id", userId)
-    .single();
-  if (error) return { genre_vector: {}, platform_vector: {} };
-  return data;
-}
+    .maybeSingle();
+
+  if (error) {
+    throw new Error("Error fetching user vector: " + error.message);
+  }
+
+  if (!data) {
+    return {
+      genreVector: {},
+      platformVector: {},
+    };
+  }
+
+  return {
+    genreVector: data.genre_vector || {},
+    platformVector: data.platform_vector || {},
+  };
+};
 
 export function buildGameVector(str) {
   const vector = {};
