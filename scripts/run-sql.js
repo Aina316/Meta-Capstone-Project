@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import fs from "fs";
 
-const sql = fs.readFileSync("supabase/sql/populate_user_vectors.sql", "utf8");
+const sql = fs.readFileSync("supabase/sql/populate-user-vectors.sql", "utf8");
 
 const res = await fetch(`${process.env.SUPABASE_URL}/rest/v1/rpc/exec_sql`, {
   method: "POST",
