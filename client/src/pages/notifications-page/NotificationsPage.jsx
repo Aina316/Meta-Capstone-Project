@@ -9,6 +9,7 @@ import {
 } from "../../services/notificationService";
 import RecommendationModal from "../../components/RecommendationModal";
 import { recommendGamesForUser } from "../../services/recommendationService";
+import RateBorrowerModal from "../../components/RateBorrowerModal";
 import "./NotificationsPage.css";
 
 const NotificationsPage = () => {
@@ -17,13 +18,15 @@ const NotificationsPage = () => {
   const [loading, setLoading] = useState(true);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
   const [modalRecommendations, setModalRecommendations] = useState([]);
+  const [showRateBorrowerModal, setShowRateBorrowerModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedBorrower, setSelectedBorrower] = useState(null);
 
   const loadNotifications = async () => {
     setLoading(true);
     if (!user) return;
     const { data, error } = await fetchNotificationsForUser(user.id);
-    if (error) return;
-    else setNotifications(data);
+    if (!error) setNotifications(data);
     setLoading(false);
   };
 
@@ -43,18 +46,24 @@ const NotificationsPage = () => {
 
         if (referenceCatalogId) {
           const { data } = await fetchCatalogGameById(referenceCatalogId);
-          if (data) {
-            referenceGame = { catalog: data };
-          }
+          if (data) referenceGame = { catalog: data };
         }
-        const recs = await recommendGamesForUser(user.id, referenceGame);
+        const recs = await recommendGamesForUser(user.id, 10, referenceGame, [
+          referenceCatalogId,
+        ]);
         if (recs.length > 0) {
           setModalRecommendations(recs);
           setShowRecommendationModal(true);
         }
       } catch (err) {
-        throw err;
+        console.error(err);
       }
+    }
+
+    if (notif?.type === "rate_borrower") {
+      setSelectedRequest(notif.request_id);
+      setSelectedBorrower(notif.borrower_id);
+      setShowRateBorrowerModal(true);
     }
   };
 
@@ -80,6 +89,7 @@ const NotificationsPage = () => {
             {notifications.map((n) => (
               <li key={n.id} className={n.read ? "read" : "unread"}>
                 <div className="notification-message">{n.message}</div>
+
                 {n.type === "declined" && !n.read && (
                   <button
                     className="see-similar-btn"
@@ -98,6 +108,20 @@ const NotificationsPage = () => {
                     Show Me Similar Games
                   </button>
                 )}
+
+                {n.type === "rate_borrower" && !n.read && (
+                  <button
+                    className="rate-borrower-btn"
+                    onClick={() => {
+                      setSelectedRequest(n.request_id);
+                      setSelectedBorrower(n.borrower_id);
+                      setShowRateBorrowerModal(true);
+                    }}
+                  >
+                    Rate Borrower
+                  </button>
+                )}
+
                 <div className="notification-meta">
                   <span>{new Date(n.created_at).toLocaleString()}</span>
                   {!n.read && (
@@ -114,10 +138,22 @@ const NotificationsPage = () => {
           </ul>
         </>
       )}
+
       {showRecommendationModal && (
         <RecommendationModal
           recommendations={modalRecommendations}
           onClose={() => setShowRecommendationModal(false)}
+        />
+      )}
+
+      {showRateBorrowerModal && (
+        <RateBorrowerModal
+          requestId={selectedRequest}
+          borrowerId={selectedBorrower}
+          onClose={() => {
+            setShowRateBorrowerModal(false);
+            loadNotifications();
+          }}
         />
       )}
     </div>
