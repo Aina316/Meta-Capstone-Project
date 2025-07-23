@@ -61,3 +61,14 @@ export async function fetchLikedGames(userId) {
 
   return gameFetches.map((res) => res.data).filter(Boolean);
 }
+
+export async function submitBorrowerFeedback(requestId, borrowerId, feedback) {
+  return await supabase.from("borrower_feedback").insert([
+    {
+      request_id: requestId,
+      borrower_id: borrowerId,
+      feedback,
+      created_at: new Date(),
+    },
+  ]);
+}
