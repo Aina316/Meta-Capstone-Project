@@ -27,34 +27,25 @@ async function main() {
   }
 
   for (const req of requests) {
-    const { data: existing, error: checkError } = await supabase
-      .from("notifications")
-      .select("id")
-      .eq("request_id", req.id)
-      .eq("type", "deadline")
-      .maybeSingle();
-
-    if (checkError) {
-      continue;
-    }
-    if (existing) {
-      continue;
-    }
     const message = `Reminder: Your borrowed game "${req.game?.title}" is due by ${req.return_date}.`;
 
-    // Insert deadline notification into notifications table
-    const { error: notifError } = await supabase.from("notifications").insert([
+    const { error: notifError } = await supabase.from("notifications").upsert(
       {
         user_id: req.borrower_id,
         type: "deadline",
+        request_id: req.id,
         message,
         read: false,
         created_at: new Date().toISOString(),
       },
-    ]);
+      { onConflict: "request_id,type" }
+    );
 
     if (notifError) {
-      return;
+      console.error(
+        `Error creating notification for request ${req.id}`,
+        notifError
+      );
     }
   }
 }
