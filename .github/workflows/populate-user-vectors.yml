@@ -2,7 +2,7 @@ name: Populate User Vectors
 
 on:
   schedule:
-    - cron: "*/20 * * * *" # Every 20 minutes
+    - cron: "*/20 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -12,14 +12,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
-      - name: Run SQL against Supabase
-        run: |
-          PGPASSWORD="${{ secrets.SUPABASE_DB_PASSWORD }}" psql \
-            -h db.${{ secrets.SUPABASE_PROJECT_REF }}.supabase.co \
-            -p 5432 \
-            -U postgres \
-            -d postgres \
-            -f supabase/sql/populate_user_vectors.sql
+      - name: Run SQL via Supabase API
+        run: node scripts/run-sql.js
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
