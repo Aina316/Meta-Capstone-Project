@@ -2,7 +2,7 @@ name: Populate User Vectors
 
 on:
   schedule:
-    - cron: "*/20 * * * *"
+    - cron: "*/5 * * * *" #Runs every 5 minutes.
   workflow_dispatch:
 
 jobs:

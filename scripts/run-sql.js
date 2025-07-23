@@ -14,8 +14,5 @@ const res = await fetch(`${process.env.SUPABASE_URL}/rest/v1/rpc/exec_sql`, {
 });
 
 if (!res.ok) {
-  console.error(await res.text());
   process.exit(1);
 }
-
-console.log("SQL executed successfully");
