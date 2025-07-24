@@ -4,8 +4,8 @@ export const createNotification = async ({
   userId,
   message,
   type,
-  requestId = null,
-  borrowerId = null,
+  requestId,
+  borrowerId,
 }) => {
   if (!userId || !message || !type) {
     return { error: new Error("Invalid notification payload") };
@@ -14,8 +14,8 @@ export const createNotification = async ({
   const { error } = await supabase.from("notifications").insert([
     {
       user_id: userId,
-      request_id: requestId,
-      borrower_id: borrowerId,
+      request_id: requestId ?? null,
+      borrower_id: borrowerId ?? null,
       message,
       type,
       read: false,
@@ -25,6 +25,7 @@ export const createNotification = async ({
 
   return { error };
 };
+
 export const fetchNotificationsForUser = async (userId) => {
   const { data, error } = await supabase
     .from("notifications")
