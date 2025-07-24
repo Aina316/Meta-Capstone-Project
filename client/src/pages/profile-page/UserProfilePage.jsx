@@ -19,7 +19,7 @@ const UserProfilePage = () => {
         .single();
 
       if (error) {
-        alert("Could not load user profile.");
+        throw error;
       } else {
         setProfile(data);
       }

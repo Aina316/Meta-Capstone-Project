@@ -67,7 +67,6 @@ const NewUserPage = () => {
         user.id
       );
       if (uploadError) {
-        alert("Error uploading avatar");
         setSaving(false);
         return;
       }
@@ -90,7 +89,7 @@ const NewUserPage = () => {
       .eq("id", user.id);
 
     if (error) {
-      alert("Failed to save profile");
+      throw error;
     } else {
       setShowGenreModal(true);
     }
@@ -113,7 +112,6 @@ const NewUserPage = () => {
       .eq("id", user.id);
 
     if (genreError) {
-      alert("Failed to save favorite genres");
       setSaving(false);
       return;
     }
@@ -125,7 +123,6 @@ const NewUserPage = () => {
     );
 
     if (platformError) {
-      alert("Failed to save favorite platforms");
       setSaving(false);
       return;
     }

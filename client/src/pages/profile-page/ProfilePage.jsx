@@ -20,7 +20,6 @@ const ProfilePage = () => {
         setLoading(false);
       })
       .catch(() => {
-        alert("Error fetching profile");
         setLoading(false);
       });
   };
