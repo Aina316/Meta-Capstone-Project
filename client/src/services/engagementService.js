@@ -2,6 +2,9 @@ import { supabase } from "./supabaseClient";
 import { buildUserVector } from "./userVectorService";
 
 export async function logEngagement(userId, catalogId, action) {
+  if (!userId || !catalogId) {
+    return;
+  }
   if (!["click", "borrow"].includes(action)) {
     throw new Error("Invalid engagement type");
   }
@@ -37,7 +40,7 @@ export async function logEngagement(userId, catalogId, action) {
       .eq("catalog_id", catalogId);
 
     if (updateError) {
-      alert("Failed to update engagement: " + updateError.message);
+      throw updateError;
     }
     if (action === "borrow") {
       await buildUserVector(userId); // When game is borrowed rebuild user's vector to reflect new preference
@@ -59,7 +62,7 @@ export async function logEngagement(userId, catalogId, action) {
       .insert([insertData]);
 
     if (insertError) {
-      alert("Failed to insert engagement: " + insertError.message);
+      throw insertError;
     }
   }
 }

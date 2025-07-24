@@ -74,7 +74,7 @@ const HomePage = () => {
                     key={game.id}
                     className="recommendation-card"
                     onClick={async () => {
-                      await logEngagement(user.id, game.id, "click");
+                      await logEngagement(user.id, game.catalog?.id, "click");
                       setSelectedGame(game);
                     }}
                   >

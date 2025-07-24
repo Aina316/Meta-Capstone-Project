@@ -50,7 +50,11 @@ const GameDetails = ({ catalogGame, onClose }) => {
       return;
     }
 
-    await logEngagement(user.id, selectedOwner.catalog_id, "borrow");
+    await logEngagement(
+      user.id,
+      selectedOwner.catalog_id ?? catalogGame.id,
+      "borrow"
+    );
 
     const { error } = await createBorrowRequest({
       lenderId: selectedOwner.owner.id,
