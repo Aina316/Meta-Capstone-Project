@@ -153,6 +153,7 @@ export const updateDenialStatus = async (
     userId: borrowerId,
     message: `Your Request for ${gameTitle} got declined. However, we can recommend you games similar to ${gameTitle}. Do you want to see?`,
     type: "declined",
+    requestId,
   });
 
   return { error: null };

@@ -111,7 +111,7 @@ const fetchEngagementScores = async (userId) => {
         (engagementMap[row.catalog_id] || 0) + clickBoost + borrowBoost;
     }
   } else if (error) {
-    alert("Failed to fetch engagement scores: " + error.message);
+    throw error.message;
   }
 
   return engagementMap;
@@ -127,7 +127,7 @@ const logRecommendationEvents = async (userId, games) => {
 
   const { error } = await supabase.from("recommendation_events").insert(events);
   if (error) {
-    alert("Failed to log recommendation events: " + error.message);
+    throw error;
   }
 };
 
