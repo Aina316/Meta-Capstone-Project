@@ -42,10 +42,7 @@ async function main() {
     );
 
     if (notifError) {
-      console.error(
-        `Error creating notification for request ${req.id}`,
-        notifError
-      );
+      throw notifError;
     }
   }
 }

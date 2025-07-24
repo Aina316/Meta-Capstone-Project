@@ -21,7 +21,7 @@ const NotificationsPage = () => {
   const [showRateBorrowerModal, setShowRateBorrowerModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedBorrower, setSelectedBorrower] = useState(null);
-
+  const [selectedNotificationId, setSelectedNotificationId] = useState(null);
   const loadNotifications = async () => {
     setLoading(true);
     if (!user) return;
@@ -56,13 +56,14 @@ const NotificationsPage = () => {
           setShowRecommendationModal(true);
         }
       } catch (err) {
-        console.error(err);
+        throw err;
       }
     }
 
     if (notif?.type === "rate_borrower") {
       setSelectedRequest(notif.request_id);
       setSelectedBorrower(notif.borrower_id);
+      setSelectedNotificationId(notif.id);
       setShowRateBorrowerModal(true);
     }
   };
@@ -115,6 +116,7 @@ const NotificationsPage = () => {
                     onClick={() => {
                       setSelectedRequest(n.request_id);
                       setSelectedBorrower(n.borrower_id);
+                      setSelectedNotificationId(n.id);
                       setShowRateBorrowerModal(true);
                     }}
                   >
@@ -150,6 +152,7 @@ const NotificationsPage = () => {
         <RateBorrowerModal
           requestId={selectedRequest}
           borrowerId={selectedBorrower}
+          notificationId={selectedNotificationId}
           onClose={() => {
             setShowRateBorrowerModal(false);
             loadNotifications();

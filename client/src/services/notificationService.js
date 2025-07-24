@@ -1,33 +1,30 @@
 import { supabase } from "./supabaseClient";
 
-export const createNotification = async ({ userId, message, type }) => {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-  if (authError) {
-    return { error: authError };
-  }
-
-  if (!userId || !message) {
+export const createNotification = async ({
+  userId,
+  message,
+  type,
+  requestId = null,
+  borrowerId = null,
+}) => {
+  if (!userId || !message || !type) {
     return { error: new Error("Invalid notification payload") };
-  }
-
-  if (userId === user.id) {
-    return { error: null };
   }
 
   const { error } = await supabase.from("notifications").insert([
     {
       user_id: userId,
+      request_id: requestId,
+      borrower_id: borrowerId,
       message,
       type,
       read: false,
+      created_at: new Date().toISOString(),
     },
   ]);
+
   return { error };
 };
-
 export const fetchNotificationsForUser = async (userId) => {
   const { data, error } = await supabase
     .from("notifications")

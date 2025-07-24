@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { submitBorrowerFeedback } from "../services/feedbackService";
+import { markNotificationAsRead } from "../services/notificationService";
+import "../App.css";
 
-const RateBorrowerModal = ({ requestId, borrowerId, onClose }) => {
+const RateBorrowerModal = ({
+  requestId,
+  borrowerId,
+  notificationId,
+  onClose,
+}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -17,6 +24,9 @@ const RateBorrowerModal = ({ requestId, borrowerId, onClose }) => {
       if (error) {
         setError("Failed to submit feedback.");
       } else {
+        if (notificationId) {
+          await markNotificationAsRead(notificationId);
+        }
         onClose();
       }
     } catch (err) {
@@ -36,14 +46,14 @@ const RateBorrowerModal = ({ requestId, borrowerId, onClose }) => {
 
         <div className="modal-buttons">
           <button
-            onClick={() => handleSubmit("upvote")}
+            onClick={() => handleSubmit("like")}
             disabled={loading}
             className="upvote-btn"
           >
             👍 Yes
           </button>
           <button
-            onClick={() => handleSubmit("downvote")}
+            onClick={() => handleSubmit("dislike")}
             disabled={loading}
             className="downvote-btn"
           >

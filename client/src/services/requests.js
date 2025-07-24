@@ -44,32 +44,33 @@ export const createBorrowRequest = async ({
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
+  if (authError) return { error: authError };
 
-  if (authError) {
-    return { error: authError };
-  }
-
-  const { error } = await supabase.from("requests").insert([
-    {
-      borrower_id: user.id,
-      lender_id: lenderId,
-      game_id: gameId,
-      status: "Pending",
-      start_date: startDate,
-      return_date: returnDate,
-    },
-  ]);
+  // Insert the request and RETURN the new row
+  const { data: newRequest, error } = await supabase
+    .from("requests")
+    .insert([
+      {
+        borrower_id: user.id,
+        lender_id: lenderId,
+        game_id: gameId,
+        status: "Pending",
+        start_date: startDate,
+        return_date: returnDate,
+      },
+    ])
+    .select("id") // fetch the new request's ID
+    .single();
 
   if (error) return { error };
 
-  if (user.id === lenderId) {
-    return { error: null };
-  }
-
+  // Create the notification, linking to the new request
   await createNotification({
     userId: lenderId,
     message: `You have a new borrow request for "${gameTitle}".`,
     type: "new_request",
+    requestId: newRequest.id,
+    borrowerId: user.id,
   });
 
   return { error: null };
@@ -102,6 +103,7 @@ export const updateApprovalStatus = async (
     userId: borrowerId,
     message: `Your borrow request for "${gameTitle}" was accepted.`,
     type: "accepted",
+    requestId,
   });
 
   const { error: declineError } = await supabase
@@ -126,6 +128,7 @@ export const updateApprovalStatus = async (
         userId: req.borrower_id,
         message: `Your borrow request for "${gameTitle}" was declined.`,
         type: "declined",
+        requestId,
       });
     }
   }

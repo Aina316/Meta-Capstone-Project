@@ -11,7 +11,6 @@ async function main() {
     "get_pending_feedback"
   );
   if (error) {
-    console.error("Error fetching pending feedback:", error);
     return;
   }
 
