@@ -6,6 +6,7 @@ export const createNotification = async ({
   type,
   requestId,
   borrowerId,
+  catalogId,
 }) => {
   if (!userId || !message || !type) {
     return { error: new Error("Invalid notification payload") };
@@ -16,6 +17,7 @@ export const createNotification = async ({
       user_id: userId,
       request_id: requestId ?? null,
       borrower_id: borrowerId ?? null,
+      catalog_id: catalogId ?? null,
       message,
       type,
       read: false,

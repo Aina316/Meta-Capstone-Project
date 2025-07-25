@@ -129,6 +129,7 @@ export const updateApprovalStatus = async (
         message: `Your request for "${gameTitle}" got declined. However, we can recommend you games similar to "${gameTitle}". Do you want to see?`,
         type: "declined",
         requestId,
+        catalogId: gameId,
       });
     }
   }
@@ -142,6 +143,16 @@ export const updateDenialStatus = async (
   borrowerId,
   gameTitle
 ) => {
+  const { data: reqData, error: reqError } = await supabase
+    .from("requests")
+    .select("game_id, game:game_id(catalog_id)")
+    .eq("id", requestId)
+    .single();
+
+  if (reqError) return { error: reqError };
+
+  const catalogId = reqData?.game?.catalog_id;
+
   const { error } = await supabase
     .from("requests")
     .update({ status: newStatus })
@@ -154,6 +165,8 @@ export const updateDenialStatus = async (
     message: `Your Request for ${gameTitle} got declined. However, we can recommend you games similar to ${gameTitle}. Do you want to see?`,
     type: "declined",
     requestId,
+    borrowerId,
+    catalogId,
   });
 
   return { error: null };

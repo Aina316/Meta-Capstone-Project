@@ -18,13 +18,10 @@ async function main() {
     .eq("status", "Accepted")
     .lte("return_date", dateIn48Hours)
     .gte("return_date", today);
-  console.log("Found requests:", requests);
   if (error) {
-    console.error("Error fetching requests:", error);
     return;
   }
   if (!requests.length) {
-    console.log("No requests found within 48 hours");
     return;
   }
   if (error) {
