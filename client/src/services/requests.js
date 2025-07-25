@@ -126,7 +126,7 @@ export const updateApprovalStatus = async (
     for (const req of declinedRequests) {
       await createNotification({
         userId: req.borrower_id,
-        message: `Your borrow request for "${gameTitle}" was declined.`,
+        message: `Your request for "${gameTitle}" got declined. However, we can recommend you games similar to "${gameTitle}". Do you want to see?`,
         type: "declined",
         requestId,
       });
