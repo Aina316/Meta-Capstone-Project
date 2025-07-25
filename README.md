@@ -74,7 +74,7 @@
 ## Technical Challenge #2 – Automated Borrowing & Deadline Notifications
 - Automated notifications for borrow requests, declines, and approvals.  
 - Implemented **deadline reminders** for borrowers 48 hours before a game’s return date using GitHub Actions + Supabase scheduled scripts.  
-- Added **rate-borrower prompts** post-transaction for improving community trust via borrower scores.  
+- Added **rate-borrower modal** post-transaction for improving community trust via borrower scores.  
 
 
 ## Data Model / Server Endpoints
