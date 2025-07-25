@@ -28,7 +28,7 @@
   - Users can log in with verified credentials.  
 
 - **Profile Management:**  
-  - Users can view their profile with username, location, ranking, and borrower/lender scores.  
+  - Users can view their profile with username, location, and borrower/lender scores.  
   - Users can view their personal game library (owned and borrowed games).  
   - Profiles are visible to other users.  
 
@@ -38,12 +38,12 @@
 
 - **Game Browse & Search:**  
   - Browse all games available for borrowing in a dynamic grid.  
-  - Search for games by title, platform, or owner.  
+  - Search for games by title, platform, or genre.  
   - Clear search results with a button.  
   - Filter games by availability, platform, and genre.  
 
 - **Game Details:**  
-  - View detailed information for any game in a modal (title, platform, genre, ranking, condition, availability, etc.).  
+  - View detailed information for any game in a modal (title, platform, genre, availability, no of copies etc.).  
 
 - **Lending System:**  
   - Send borrow requests for available games.  
