@@ -9,15 +9,24 @@ const supabase = createClient(
 async function main() {
   const now = new Date();
   const in48Hours = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-
+  const today = now.toISOString().split("T")[0];
+  const dateIn48Hours = in48Hours.toISOString().split("T")[0];
   // Get all requests with a return date within next 48 hours
   const { data: requests, error } = await supabase
     .from("requests")
     .select("id, borrower_id, return_date,game:game_id(title)")
     .eq("status", "Accepted")
-    .lt("return_date", in48Hours.toISOString())
-    .gt("return_date", now.toISOString());
-
+    .lte("return_date", dateIn48Hours)
+    .gte("return_date", today);
+  console.log("Found requests:", requests);
+  if (error) {
+    console.error("Error fetching requests:", error);
+    return;
+  }
+  if (!requests.length) {
+    console.log("No requests found within 48 hours");
+    return;
+  }
   if (error) {
     return;
   }

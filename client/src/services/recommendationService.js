@@ -42,11 +42,11 @@ export const getAdaptiveWeights = ({
     (totalUpvotes - totalDownvotes) / (totalUpvotes + totalDownvotes + 1);
 
   return {
-    distance: 0,
-    genre: 200 + 100 * borrowInfluence,
-    platform: 300 + 100 * clickInfluence,
-    release: 0,
-    condition: 0,
+    distance: 1,
+    genre: 2 + 2 * borrowInfluence,
+    platform: 3 + 3 * clickInfluence,
+    release: 4,
+    condition: 2,
     feedback: 1 + 1 * feedbackScore,
     engagement: 0.5 + 1 * borrowInfluence,
     borrowPattern: 1 + 2 * borrowInfluence,
