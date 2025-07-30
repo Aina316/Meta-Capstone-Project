@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { useLocation } from "react-router-dom";
+import { useLoader } from "./context/LoaderContext";
 import PrivateRoute from "./routes/PrivateRoute";
 import Landing from "./pages/landing-page/Landing";
 import Login from "./pages/login-page/Login";
@@ -12,11 +15,14 @@ import LikedGames from "./pages/liked-games-page/LikedGames";
 import UserProfilePage from "./pages/profile-page/UserProfilePage";
 import UserGameLibrary from "./pages/game-library-page/UserGameLibrary";
 import NotificationsPage from "./pages/notifications-page/NotificationsPage";
+import Loader from "./components/Loader";
 import "./App.css";
 
 function App() {
+  const { loading } = useLoader();
   return (
     <>
+      {loading && <Loader />}
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<Signup />} />
@@ -29,7 +35,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/home"
           element={
@@ -78,7 +83,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/profile/:userId/library"
           element={
@@ -92,4 +96,5 @@ function App() {
     </>
   );
 }
+
 export default App;
