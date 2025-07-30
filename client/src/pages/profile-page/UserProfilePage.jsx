@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useLoader } from "../../context/LoaderContext";
 import { supabase } from "../../services/supabaseClient";
 import Header from "../../components/Header";
 import image from "../../assets/images/default_avatar.jpg";
@@ -8,10 +9,10 @@ import "./ProfilePage.css";
 const UserProfilePage = () => {
   const { userId } = useParams();
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-
+  const { setLoading } = useLoader();
   useEffect(() => {
     const loadProfile = async () => {
+      setLoading(true);
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -28,8 +29,6 @@ const UserProfilePage = () => {
 
     loadProfile();
   }, [userId]);
-
-  if (loading) return <p>Loading profile...</p>;
 
   if (!profile) return <p>User not found.</p>;
 

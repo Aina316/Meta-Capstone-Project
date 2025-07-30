@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/authContext";
+import { useLoader } from "../../context/LoaderContext";
 import { fetchLikedGames } from "../../services/feedbackService";
 import Header from "../../components/Header";
 import "./LikedGames.css";
@@ -7,11 +8,11 @@ import "./LikedGames.css";
 const LikedGames = () => {
   const { user } = useAuth();
   const [likedGames, setLikedGames] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+  const { setLoading } = useLoader();
   useEffect(() => {
     const loadLikedGames = async () => {
       if (!user) return;
+      setLoading(true);
       const games = await fetchLikedGames(user.id);
       setLikedGames(games);
       setLoading(false);
@@ -27,9 +28,7 @@ const LikedGames = () => {
       <div className="liked-games-content">
         <h2>Liked Games</h2>
 
-        {loading ? (
-          <p>Loading your liked games...</p>
-        ) : likedGames.length === 0 ? (
+        {likedGames.length === 0 ? (
           <div className="liked-games-empty">
             You haven't liked any games yet.
           </div>

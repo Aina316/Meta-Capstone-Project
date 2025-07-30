@@ -4,6 +4,7 @@ import "./HomePage.css";
 import Header from "../../../components/Header";
 import RequestBoard from "../Request/RequestBoard";
 import GameDetails from "../../../components/GameDetails";
+import { useLoader } from "../../../context/LoaderContext";
 import { useAuth } from "../../../context/authContext";
 import { recommendGamesForUser } from "../../../services/recommendationService";
 import { saveRecommendationFeedback } from "../../../services/feedbackService";
@@ -17,19 +18,21 @@ const HomePage = () => {
   const [recError, setRecError] = useState("");
   const [feedbackStatus, setFeedbackStatus] = useState({});
   const [selectedGame, setSelectedGame] = useState(null);
-
+  const { setLoading } = useLoader();
   const loadRecommendations = async (referenceGame = null) => {
     if (!user) {
       setLoadingRecs(false);
       return;
     }
     try {
+      setLoading(true);
       const recs = await recommendGamesForUser(user.id, 50);
       setAllRecommendations(recs);
       setRecommendations(recs.slice(0, 3));
     } catch (err) {
       setRecError("Failed to load recommendations.");
     } finally {
+      setLoading(false);
       setLoadingRecs(false);
     }
   };
