@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLoader } from "../../context/LoaderContext";
 import { useNavigate } from "react-router-dom";
 import { getUserProfile } from "../../services/profileService";
 import EditProfile from "./EditProfile";
@@ -8,9 +9,9 @@ import "./ProfilePage.css";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [openEdit, setOpenEdit] = useState(false);
   const navigate = useNavigate();
+  const { setLoading } = useLoader();
 
   const loadProfile = () => {
     setLoading(true);
@@ -33,43 +34,41 @@ const ProfilePage = () => {
     setOpenEdit(false);
   };
 
-  if (loading) return <p>Loading profile...</p>;
-
   return (
     <div className="profilepage-component">
       <Header />
 
       <div className="profilepage-content">
         <h2>My Profile</h2>
-        <img src={profile.image || image} alt="Avatar" />
+        <img src={profile?.image || image} alt="Avatar" />
         <h3>{profile?.username}</h3>
         <p className="profile-bio">Bio: {profile?.bio}</p>
         <p className="profile-location">Location: {profile?.location}</p>
 
-        {profile.favorite_genres && profile.favorite_genres.length > 0 && (
+        {profile?.favorite_genres && profile?.favorite_genres.length > 0 && (
           <div className="profile-favorites">
             <p>
               <strong>Favorite Genres:</strong>{" "}
-              {profile.favorite_genres.join(", ")}
+              {profile?.favorite_genres.join(", ")}
             </p>
           </div>
         )}
 
-        {profile.favorite_platforms &&
-          profile.favorite_platforms.length > 0 && (
+        {profile?.favorite_platforms &&
+          profile?.favorite_platforms.length > 0 && (
             <div className="profile-favorites">
               <p>
                 <strong>Favorite Platforms:</strong>{" "}
-                {profile.favorite_platforms.join(", ")}
+                {profile?.favorite_platforms.join(", ")}
               </p>
             </div>
           )}
         <div className="profile-scores">
           <p>
-            <strong>Lender Score:</strong> {profile.lender_score}
+            <strong>Lender Score:</strong> {profile?.lender_score}
           </p>
           <p>
-            <strong>Borrower Score:</strong> {profile.borrower_score}
+            <strong>Borrower Score:</strong> {profile?.borrower_score}
           </p>
         </div>
         <button onClick={() => setOpenEdit(true)}>Edit Profile</button>

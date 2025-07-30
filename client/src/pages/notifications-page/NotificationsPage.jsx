@@ -1,5 +1,6 @@
 import Header from "../../components/Header";
 import { useEffect, useState } from "react";
+import { useLoader } from "../../context/LoaderContext";
 import { useAuth } from "../../context/authContext";
 import { fetchCatalogGameById } from "../../services/catalogService";
 import {
@@ -15,16 +16,20 @@ import "./NotificationsPage.css";
 const NotificationsPage = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
   const [modalRecommendations, setModalRecommendations] = useState([]);
   const [showRateBorrowerModal, setShowRateBorrowerModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedBorrower, setSelectedBorrower] = useState(null);
   const [selectedNotificationId, setSelectedNotificationId] = useState(null);
+  const { setLoading } = useLoader();
+
   const loadNotifications = async () => {
     setLoading(true);
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     const { data, error } = await fetchNotificationsForUser(user.id);
     if (!error) setNotifications(data);
     setLoading(false);
@@ -77,9 +82,7 @@ const NotificationsPage = () => {
     <div className="notifications-page">
       <Header />
       <h2>Notifications</h2>
-      {loading ? (
-        <p>Loading...</p>
-      ) : notifications.length === 0 ? (
+      {notifications.length === 0 ? (
         <p>No notifications yet.</p>
       ) : (
         <>

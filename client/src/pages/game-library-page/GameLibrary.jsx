@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabaseClient";
 import { useAuth } from "../../context/authContext";
+import { useLoader } from "../../context/LoaderContext";
 import Header from "../../components/Header";
 import AddGameModal from "./AddGameModal";
 import "./GameLibrary.css";
@@ -8,9 +9,8 @@ import "./GameLibrary.css";
 const GameLibrary = () => {
   const { user } = useAuth();
   const [ownedGames, setOwnedGames] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-
+  const { setLoading } = useLoader();
   const loadLibrary = async () => {
     if (!user) return;
     setLoading(true);
@@ -54,9 +54,7 @@ const GameLibrary = () => {
       <div className="game-library-content">
         <h2>My Game Library</h2>
 
-        {loading ? (
-          <p>Loading your games...</p>
-        ) : ownedGames.length === 0 ? (
+        {ownedGames.length === 0 ? (
           <div className="game-library-empty">
             No games in your library yet.
           </div>
