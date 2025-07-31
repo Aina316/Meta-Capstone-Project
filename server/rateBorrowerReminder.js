@@ -23,8 +23,15 @@ async function main() {
       .maybeSingle();
 
     if (checkError || existing) continue;
+    const { data: borrowerProfile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", req.borrower_id)
+      .single();
 
-    const message = "Please rate your recent borrower.";
+    const borrowerUsername = borrowerProfile?.username || "this user";
+    const message = `Please rate your experience with ${borrowerUsername}.`;
+
     await supabase.from("notifications").insert([
       {
         user_id: req.lender_id,
