@@ -65,9 +65,6 @@ const ProfilePage = () => {
           )}
         <div className="profile-scores">
           <p>
-            <strong>Lender Score:</strong> {profile?.lender_score}
-          </p>
-          <p>
             <strong>Borrower Score:</strong> {profile?.borrower_score}
           </p>
         </div>
