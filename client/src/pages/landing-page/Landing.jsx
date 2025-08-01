@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import "./Landing.css";
 
 const images = [
-  "/src/assets/images/Naruto.jpg",
-  "/src/assets/images/GTAV.jpg",
-  "/src/assets/images/MK.jpg",
-  "/src/assets/images/RDR2.jpg",
-  "/src/assets/images/Mario.jpg",
-  "/src/assets/images/ELDSCR.jpg",
+  "/images/Naruto.jpg",
+  "/images/GTAV.jpg",
+  "/images/MK.jpg",
+  "/images/RDR2.jpg",
+  "/images/Mario.jpg",
+  "/images/ELDSCR.jpg",
 ];
 
 const Landing = () => {
